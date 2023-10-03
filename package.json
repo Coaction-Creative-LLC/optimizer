@@ -88,7 +88,8 @@
     "util": "^0.12.5",
     "uuid": "^9.0.0",
     "web-vitals": "^3.1.1",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -123,6 +124,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "env-cmd": "^10.1.0",
     "immutable": "^4.3.0",
     "react-error-overlay": "6.0.11",
