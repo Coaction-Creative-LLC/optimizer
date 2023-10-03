@@ -57,7 +57,7 @@ const Analytics = () => {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <LatestCustomerTableCard title="Latest Customers" />
+                        <LatestCustomerTableCard title="Latest Customer" />
                     </Grid>
                 </Grid>
             </Grid>
