@@ -99,13 +99,11 @@
         "yup": "^0.32.11"
     },
     "scripts": {
-        "start": "node server.js",
-        "build-stage": "env-cmd -f .env.qa react-app-rewired build",
+        "start": "react-app-rewired start",
         "build": "react-app-rewired build",
-        "lint": "eslint --ext .js,.jsx ./src",
-        "test": "react-scripts test",
+        "test": "react-app-rewired test",
         "eject": "react-scripts eject"
-    },
+      },
     "eslintConfig": {
         "extends": [
             "react-app",
