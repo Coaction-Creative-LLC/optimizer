@@ -9,6 +9,7 @@ module.exports = function override(config) {
         util: require.resolve('util'),
         buffer: require.resolve('buffer')
     };
+    config.resolve.alias['@'] = path.resolve(__dirname, 'src');
 
     // https://stackoverflow.com/questions/69135310/workaround-for-cache-size-limit-in-create-react-app-pwa-service-worker
     config.plugins.forEach((plugin) => {
