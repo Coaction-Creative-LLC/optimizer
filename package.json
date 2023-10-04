@@ -1,6 +1,5 @@
 {
     "name": "berry-material-react",
-    "homepage": "https://optimizer-0c5f8888d40a.herokuapp.com",
     "version": "3.6.0",
     "private": true,
     "dependencies": {
