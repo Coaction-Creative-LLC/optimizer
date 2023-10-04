@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const WorkBoxPlugin = require('workbox-webpack-plugin');
+const path = require('path');
 
 module.exports = function override(config) {
     config.resolve.fallback = {
