@@ -4,9 +4,6 @@
     "version": "3.6.0",
     "private": true,
     "dependencies": {
-        "@babel/core": "^7.14.3",
-  "@babel/preset-env": "^7.14.2",
-  "@babel/preset-react": "^7.13.13",
         "@auth0/auth0-spa-js": "^2.0.2",
         "@emotion/cache": "^11.10.5",
         "@emotion/react": "^11.10.5",
@@ -109,12 +106,7 @@
     },
     "babel": {
         "presets": [
-            "@babel/preset-env",
             "@babel/preset-react"
-        ],
-        "plugins": [
-            "@babel/plugin-proposal-private-methods",
-            "@babel/plugin-proposal-private-property-in-object"
         ]
     },
     "browserslist": {
