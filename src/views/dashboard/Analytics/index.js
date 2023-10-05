@@ -1,7 +1,6 @@
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Typography, useMediaQuery } from '@mui/material';
-
 // project imports
 import MarketShareAreaChartCard from './MarketShareAreaChartCard';
 import TotalRevenueCard from './TotalRevenueCard';
