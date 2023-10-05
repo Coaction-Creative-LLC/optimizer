@@ -1,0 +1,1 @@
+web: npx pm2 start --name optimizer npm -- start
