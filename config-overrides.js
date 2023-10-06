@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const WorkBoxPlugin = require('workbox-webpack-plugin');
 
 module.exports = function override(config) {
+    config.output.publicPath = '/'
     config.resolve.fallback = {
         process: require.resolve('process/browser'),
         stream: require.resolve('stream-browserify'),

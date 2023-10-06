@@ -1,34 +1,34 @@
-import { createRoot } from 'react-dom/client';
+import { createRoot } from "react-dom/client";
 
 // third party
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
+import { BrowserRouter, HashRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 // project imports
-import App from 'App';
-import { store, persister } from 'store';
-import * as serviceWorker from 'serviceWorker';
-import reportWebVitals from 'reportWebVitals';
-import { ConfigProvider } from 'contexts/ConfigContext';
+import App from "App";
+import { store, persister } from "store";
+import * as serviceWorker from "serviceWorker";
+import reportWebVitals from "reportWebVitals";
+import { ConfigProvider } from "contexts/ConfigContext";
 
 // style + assets
-import 'assets/scss/style.scss';
+import "assets/scss/style.scss";
 
 // ==============================|| REACT DOM RENDER ||============================== //
 
-const container = document.getElementById('root');
+const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
-    <Provider store={store}>
-        <PersistGate loading={null} persistor={persister}>
-            <ConfigProvider>
-                <BrowserRouter basename={process.env.REACT_APP_BASE_NAME}>
-                    <App />
-                </BrowserRouter>
-            </ConfigProvider>
-        </PersistGate>
-    </Provider>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persister}>
+      <ConfigProvider>
+        <HashRouter basename={process.env.REACT_APP_BASE_NAME}>
+          <App />
+        </HashRouter>
+      </ConfigProvider>
+    </PersistGate>
+  </Provider>
 );
 
 // If you want your app to work offline and load faster, you can change

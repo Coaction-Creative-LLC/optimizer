@@ -1,5 +1,6 @@
 {
     "name": "berry-material-react",
+    "homepage": "https://materialberryio.netlify.app",
     "version": "3.6.0",
     "private": true,
     "dependencies": {
