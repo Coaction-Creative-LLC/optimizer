@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 
 // third party
-import { BrowserRouter, HashRouter } from "react-router-dom";
+import {  HashRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
