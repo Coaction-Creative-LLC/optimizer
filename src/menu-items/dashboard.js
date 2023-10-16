@@ -32,6 +32,14 @@ const dashboard = {
             url: '/dashboard/analytics',
             icon: icons.IconDeviceAnalytics,
             breadcrumbs: false
+        },
+        {
+            id: 'optimizer',
+            title: <FormattedMessage id="optimizer" />,
+            type: 'item',
+            url: '/dashboard/optimizer',
+            icon: icons.IconDeviceAnalytics,
+            breadcrumbs: false
         }
     ]
 };

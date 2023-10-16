@@ -85,11 +85,11 @@ const LoginForms = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Stack direction="row" justifyContent="flex-end">
-                            <AnimateButton>
+                            {/* <AnimateButton> */}
                                 <Button variant="contained" type="submit">
                                     Verify & Submit
                                 </Button>
-                            </AnimateButton>
+                            {/* </AnimateButton> */}
                         </Stack>
                     </Grid>
                 </Grid>

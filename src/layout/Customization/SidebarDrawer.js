@@ -15,7 +15,6 @@ import max from 'assets/images/customization/max.svg';
 const SidebarDrawer = () => {
     const theme = useTheme();
     const { drawerType, onChangeDrawer } = useConfig();
-
     return (
         <Stack direction="row" alignItems="center" pb={2} px={2} justifyContent="space-between" spacing={2.5} sx={{ width: '100%' }}>
             <Typography variant="h5">SIDEBAR DRAWER</Typography>
