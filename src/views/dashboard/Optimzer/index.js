@@ -14,6 +14,7 @@ import * as yup from "yup";
 import { useDispatch } from "store";
 import { openSnackbar } from "store/slices/snackbar";
 import axios from "axios";
+import InnerHeader from "ui-component/InnerHeader";
 
 const validationSchema = yup.object({
   default_link: yup.string().required("URL is required"),
@@ -30,7 +31,9 @@ const Optimizer = () => {
     onSubmit: async () => {
       try {
         const response = await axios.post(
-          `http://localhost:5000/generate-url`,
+          // `http://localhost:5000/generate-url`,
+          `https://app.developmental.site/generate-url`,
+
           {
             url: formik.values.default_link,
           },
@@ -60,9 +63,16 @@ const Optimizer = () => {
       // })
     },
   });
+  const text = [
+    {
+      value: "Optimizer",
+      url: "/optimizer",
+    },
+  ];
   return (
     <Box>
-      <Grid container display="flex" justifyContent="center">
+      <InnerHeader title={"Optimizer"} text={text} />
+      <Grid container display="flex" justifyContent="center" marginTop={5}>
         <Grid item xs={12} sm={8} md={6} lg={6}>
           <MainCard title="Optimizer">
             <form onSubmit={formik.handleSubmit}>
@@ -72,7 +82,7 @@ const Optimizer = () => {
                     fullWidth
                     id="default_link"
                     name="default_link"
-                    label="Enter Your URL"
+                    label="Enter Destination Url"
                     value={formik.values.default_link}
                     onChange={formik.handleChange}
                     error={
@@ -92,7 +102,15 @@ const Optimizer = () => {
                     {randomUrl && (
                       <Typography variant="body2">
                         Click to Open:{" "}
-                        <Link href={randomUrl}> {randomUrl}</Link>{" "}
+                        <Typography
+                          component="a"
+                          href={randomUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {randomUrl}
+                        </Typography>
+                        {/* <Link href={randomUrl}> {randomUrl}</Link>{" "} */}
                       </Typography>
                     )}
                     <Button variant="contained" type="submit">

@@ -5,6 +5,11 @@ import MainLayout from "layout/MainLayout";
 import Loadable from "ui-component/Loadable";
 import AuthGuard from "utils/route-guard/AuthGuard";
 import Optimizer from "views/dashboard/Optimzer";
+import AddAdvertiser from "views/dashboard/Advertiser/AddAdvertiser";
+import Audience from "views/dashboard/Advertiser/Audience";
+import Offers from "views/dashboard/Offers";
+import Campaign from "views/dashboard/Campaign";
+import Dashboard from "views/dashboard/Dashboard";
 
 // dashboard routing
 const DashboardDefault = Loadable(
@@ -652,7 +657,27 @@ const MainRoutes = {
       element: <DashboardDefault />,
     },
     {
-      path: "/dashboard/optimizer",
+      path: "/advertiser/add-advertiser",
+      element: <AddAdvertiser />,
+    },
+    {
+      path: "/advertiser/audience",
+      element: <Audience />,
+    },
+    {
+      path: "/offers",
+      element: <Offers />,
+    },
+    {
+      path: "/campaign",
+      element: <Campaign />,
+    },
+    {
+      path: "/dashboard",
+      element: <Dashboard />,
+    },
+    {
+      path: "/optimizer",
       element: <Optimizer />,
     },
     {
