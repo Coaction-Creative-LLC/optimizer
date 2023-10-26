@@ -1,4 +1,4 @@
-import React from "react";
+import { AudienceFilters, AudienceTable } from "components/advertiser";
 import InnerHeader from "ui-component/InnerHeader";
 
 const Audience = () => {
@@ -15,6 +15,8 @@ const Audience = () => {
   return (
     <>
       <InnerHeader title={"Audience"} text={text} />
+      <AudienceFilters />
+      <AudienceTable />
     </>
   );
 };

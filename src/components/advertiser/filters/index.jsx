@@ -3,49 +3,19 @@ import {
   Box,
   Button,
   InputAdornment,
-  MenuItem,
-  Select,
   TextField,
   Typography,
   createFilterOptions,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import { ArrowDropDown } from "@mui/icons-material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useTheme } from "@mui/material/styles";
-import { useState } from "react";
-import { makeStyles } from "@mui/styles";
+import { AddCircle, KeyboardArrowDown, Search } from "@mui/icons-material";
+import { searchData, tagsData } from "./data";
 
-const topFilms = [
-  "The Shawshank Redemption",
-  "The Godfather",
-  "The Godfather: Part II",
-  "The Dark Knight",
-  "12 Angry Men",
-  "Schindler's List",
-  "Pulp Fiction",
-];
 const filter = createFilterOptions();
 
-const useStyles = makeStyles({
-  root: {
-    color: "white",
-    height: 40,
-    padding: 0,
-  },
-  "& fieldset": {
-    border: 0,
-  },
-});
-
 const FilterOptions = () => {
-  const [tag, setTag] = useState("");
   const theme = useTheme();
-  const classes = useStyles();
 
-  const handleChange = (event) => {
-    setTag(event.target.value);
-  };
   return (
     <Box
       sx={{ marginTop: "20px", marginBottom: "8px" }}
@@ -53,8 +23,10 @@ const FilterOptions = () => {
       justifyContent={"space-between"}
       alignItems={"center"}
     >
-      <Box display={"flex"} alignItems={"center"} gap={2}>
+      <Box display={"flex"} gap={1}>
         <Autocomplete
+          forcePopupIcon
+          popupIcon={<KeyboardArrowDown />}
           style={{ height: "40px", width: "211px" }}
           onChange={(event, newValue) => {}}
           filterOptions={(options, params) => {
@@ -67,13 +39,14 @@ const FilterOptions = () => {
             return filtered;
           }}
           id="free-solo-with-text-demo"
-          options={topFilms}
+          options={searchData.sort((a, b) => -b.label.localeCompare(a.label))}
+          getOptionLabel={(option) => option.label}
+          freeSolo
           renderOption={(props, option) => (
             <Box component="li" {...props}>
-              {option}
+              {option.label}
             </Box>
           )}
-          freeSolo
           sx={{
             "& input": {
               bgcolor:
@@ -85,8 +58,8 @@ const FilterOptions = () => {
           renderInput={(params) => (
             <TextField
               {...params}
-              name="role"
-              placeholder="Select Role"
+              name="search"
+              placeholder="Select"
               size="small"
               InputProps={{
                 ...params.InputProps,
@@ -100,12 +73,7 @@ const FilterOptions = () => {
                 },
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <ArrowDropDown sx={{ color: "text.primary" }} />
+                    <Search />
                   </InputAdornment>
                 ),
               }}
@@ -113,84 +81,149 @@ const FilterOptions = () => {
             />
           )}
         />
-        <Select
-          value={tag}
-          onChange={handleChange}
-          displayEmpty
-          className={classes.root}
-          inputProps={{
-            "aria-label": "Without label",
-            sx: {
-              padding: 1,
+        <Autocomplete
+          forcePopupIcon
+          popupIcon={<KeyboardArrowDown />}
+          style={{ height: "40px", width: "130px" }}
+          onChange={(event, newValue) => {}}
+          id="free-solo-with-text-demo"
+          options={tagsData.sort((a, b) => -b.label.localeCompare(a.label))}
+          getOptionLabel={(option) => option.label}
+          freeSolo
+          renderOption={(props, option) => (
+            <Box component="li" {...props}>
+              {option.label}
+            </Box>
+          )}
+          sx={{
+            "& input": {
               bgcolor:
                 theme.palette.mode === "dark"
                   ? theme.palette.common.black
                   : theme.palette.secondary.light,
-              "& fieldset": { border: "none" },
             },
           }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              name="search"
+              placeholder="Select Tag"
+              size="small"
+              InputProps={{
+                ...params.InputProps,
+                sx: {
+                  padding: 1,
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? theme.palette.common.black
+                      : theme.palette.secondary.light,
+                  "& fieldset": { border: "none" },
+                },
+              }}
+              style={{ height: "40px" }}
+            />
+          )}
+        />
+        <Button
+          style={{ fontWeight: 200, height: "35px" }}
+          variant="contained"
+          size="small"
         >
-          <MenuItem value="">
-            <em>select a tag</em>
-          </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
-        </Select>
-        <Button variant="contained" size="small">
-          apply tag
+          Apply Tag
         </Button>
-        <Button variant="contained" size="small">
+        <Button
+          style={{ fontWeight: 200, height: "35px" }}
+          variant="contained"
+          size="small"
+        >
           remove tag
         </Button>
-        <Select
-          value={tag}
-          onChange={handleChange}
-          displayEmpty
-          className={classes.root}
-          inputProps={{
-            "aria-label": "Without label",
-            sx: {
-              padding: 1,
+        <Autocomplete
+          forcePopupIcon
+          popupIcon={<KeyboardArrowDown />}
+          style={{ height: "40px", width: "211px" }}
+          onChange={(event, newValue) => {}}
+          id="free-solo-with-text-demo"
+          options={tagsData.sort((a, b) => -b.label.localeCompare(a.label))}
+          getOptionLabel={(option) => option.label}
+          freeSolo
+          renderOption={(props, option) => (
+            <Box component="li" {...props}>
+              {option.label}
+            </Box>
+          )}
+          sx={{
+            "& input": {
               bgcolor:
                 theme.palette.mode === "dark"
                   ? theme.palette.common.black
                   : theme.palette.secondary.light,
-              "& fieldset": { border: "none" },
             },
           }}
-        >
-          <MenuItem value="">
-            <em>all advertiser manager</em>
-          </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
-        </Select>
-        <Select
-          value={tag}
-          onChange={handleChange}
-          displayEmpty
-          className={classes.root}
-          inputProps={{
-            "aria-label": "Without label",
-            sx: {
-              padding: 1,
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              name="search"
+              placeholder="All Advertiser Manager"
+              size="small"
+              InputProps={{
+                ...params.InputProps,
+                sx: {
+                  padding: 1,
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? theme.palette.common.black
+                      : theme.palette.secondary.light,
+                  "& fieldset": { border: "none" },
+                },
+              }}
+              style={{ height: "40px" }}
+            />
+          )}
+        />
+        <Autocomplete
+          forcePopupIcon
+          popupIcon={<KeyboardArrowDown />}
+          style={{ height: "40px", width: "170px" }}
+          onChange={(event, newValue) => {}}
+          id="free-solo-with-text-demo"
+          options={tagsData.sort((a, b) => -b.label.localeCompare(a.label))}
+          getOptionLabel={(option) => option.label}
+          freeSolo
+          renderOption={(props, option) => (
+            <Box component="li" {...props}>
+              {option.label}
+            </Box>
+          )}
+          sx={{
+            "& input": {
               bgcolor:
                 theme.palette.mode === "dark"
                   ? theme.palette.common.black
                   : theme.palette.secondary.light,
-              "& fieldset": { border: "none" },
             },
           }}
-        >
-          <MenuItem value="">
-            <em>all advertiser tag</em>
-          </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
-        </Select>
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              name="search"
+              placeholder="All Advertiser Tag"
+              size="small"
+              InputProps={{
+                ...params.InputProps,
+                sx: {
+                  padding: 1,
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? theme.palette.common.black
+                      : theme.palette.secondary.light,
+                  "& fieldset": { border: "none" },
+                },
+              }}
+              style={{ height: "40px" }}
+            />
+          )}
+        />
       </Box>
       <Box
         display={"flex"}
@@ -201,11 +234,9 @@ const FilterOptions = () => {
         <Typography variant="h5" color={"#616161"}>
           Add Advertiser
         </Typography>
-        <AddCircleIcon
-          sx={{
+        <AddCircle
+          style={{
             color: theme.palette.secondary.dark,
-            backgroundColor: "#fff",
-            borderRadius: "50%",
             cursor: "pointer",
           }}
         />

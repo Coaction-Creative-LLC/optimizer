@@ -33,8 +33,8 @@ const dashboard = {
       url: "/advertiser",
       children: [
         {
-          id: "Add Avertiser",
-          title: <FormattedMessage id="add-avertiser" />,
+          id: "Add Advertiser",
+          title: <FormattedMessage id="add-advertiser" />,
           type: "item",
           url: "/advertiser/add-advertiser",
         },
@@ -63,7 +63,7 @@ const dashboard = {
       breadcrumbs: false,
     },
     {
-      id: "optimizer",
+      id: "Optimizer",
       title: <FormattedMessage id="optimizer" />,
       type: "item",
       url: "/optimizer",
@@ -71,7 +71,7 @@ const dashboard = {
       breadcrumbs: false,
     },
     {
-      id: "default",
+      id: "Default",
       title: <FormattedMessage id="default" />,
       type: "item",
       url: "/dashboard/default",

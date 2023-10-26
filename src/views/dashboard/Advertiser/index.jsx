@@ -1,5 +1,5 @@
 import InnerHeader from "ui-component/InnerHeader";
-import { FilterOptions } from "components/advertiser";
+import { AdvertiserTable, FilterOptions } from "components/advertiser";
 
 const text = [
   {
@@ -13,6 +13,7 @@ const MainAdvertiser = () => {
     <div>
       <InnerHeader title={"Advertiser"} text={text} />
       <FilterOptions />
+      <AdvertiserTable />
     </div>
   );
 };

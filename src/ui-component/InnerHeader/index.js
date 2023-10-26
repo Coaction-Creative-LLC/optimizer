@@ -1,8 +1,8 @@
-import React from "react";
-import { Typography, Box, Grid, IconButton } from "@mui/material";
+import { Typography, Box, Grid } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import HomeIcon from "@mui/icons-material/Home";
+
 const InnerHeader = ({ title, text = [] }) => {
   const theme = useTheme();
   return (
@@ -22,7 +22,6 @@ const InnerHeader = ({ title, text = [] }) => {
     >
       <Box>
         <Typography variant="h4" color={theme.palette.common.white}>
-          {" "}
           {title}
         </Typography>
       </Box>
@@ -34,7 +33,7 @@ const InnerHeader = ({ title, text = [] }) => {
           {text.map((data, index) => (
             <>
               <Grid item>
-                <ArrowForwardIosIcon />
+                <ArrowForwardIosIcon fontSize="sm" />
               </Grid>
               <Grid item>
                 <Typography variant="h4" color={theme.palette.common.white}>

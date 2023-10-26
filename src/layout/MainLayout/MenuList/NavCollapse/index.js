@@ -199,7 +199,8 @@ const NavCollapse = ({ menu, level, parentId }) => {
     }
   });
 
-  const isSelected = selected === menu.id;
+  const { selectedItem } = useSelector((state) => state.menu);
+  const isSelected = selectedItem.findIndex((id) => id === menu.id) > -1;
 
   const Icon = menu.icon;
   const menuIcon = menu.icon ? (
@@ -264,17 +265,29 @@ const NavCollapse = ({ menu, level, parentId }) => {
               borderRadius: `${borderRadius}px`,
               mb: 0.5,
               pl: drawerOpen ? `${level * 24}px` : 1.25,
+              ...(theme.palette.mode === "dark" && {
+                bgcolor: isSelected
+                  ? theme.palette.secondary.light
+                  : "transparent",
+                color: isSelected
+                  ? theme.palette.secondary.dark
+                  : theme.palette.secondary.light,
+                "&:hover": {
+                  bgcolor: isSelected
+                    ? theme.palette.secondary.light
+                    : "rgba(0, 0, 0, 0.2)",
+                },
+              }),
               ...(drawerOpen &&
-                level === 1 &&
-                theme.palette.mode !== "dark" && {
+                level === 1 && {
                   "&:hover": {
                     background: theme.palette.secondary.light,
                   },
                   "&.Mui-selected": {
                     background: theme.palette.secondary.light,
-                    color: iconSelectedColor,
+                    color: theme.palette.secondary.dark,
                     "&:hover": {
-                      color: iconSelectedColor,
+                      color: theme.palette.secondary.dark,
                       background: theme.palette.secondary.light,
                     },
                   },
