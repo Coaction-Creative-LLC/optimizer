@@ -30,6 +30,7 @@ const dashboard = {
       title: <FormattedMessage id="advertiser" />,
       type: "collapse",
       icon: icons.IconDeviceAnalytics,
+      url: "/advertiser",
       children: [
         {
           id: "Add Avertiser",

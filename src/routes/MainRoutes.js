@@ -5,6 +5,7 @@ import MainLayout from "layout/MainLayout";
 import Loadable from "ui-component/Loadable";
 import AuthGuard from "utils/route-guard/AuthGuard";
 import Optimizer from "views/dashboard/Optimzer";
+import MainAdvertiser from "views/dashboard/Advertiser";
 import AddAdvertiser from "views/dashboard/Advertiser/AddAdvertiser";
 import Audience from "views/dashboard/Advertiser/Audience";
 import Offers from "views/dashboard/Offers";
@@ -655,6 +656,10 @@ const MainRoutes = {
     {
       path: "/dashboard/default",
       element: <DashboardDefault />,
+    },
+    {
+      path: "/advertiser",
+      element: <MainAdvertiser />,
     },
     {
       path: "/advertiser/add-advertiser",
