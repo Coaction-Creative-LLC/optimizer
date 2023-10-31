@@ -1,4 +1,4 @@
-import React from "react";
+import { OffersFilterOptions, OffersTable } from "components/offers";
 import InnerHeader from "ui-component/InnerHeader";
 
 const Offers = () => {
@@ -11,6 +11,8 @@ const Offers = () => {
   return (
     <>
       <InnerHeader title={"Offers"} text={text} />
+      <OffersFilterOptions />
+      <OffersTable />
     </>
   );
 };

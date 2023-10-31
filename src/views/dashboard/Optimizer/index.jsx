@@ -1,18 +1,9 @@
-import {
-  Grid,
-  TextField,
-  Stack,
-  Button,
-  Link,
-  Typography,
-} from "@mui/material";
+import { Grid, TextField, Stack, Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useState } from "react";
 import MainCard from "ui-component/cards/MainCard";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useDispatch } from "store";
-import { openSnackbar } from "store/slices/snackbar";
 import axios from "axios";
 import InnerHeader from "ui-component/InnerHeader";
 
@@ -20,7 +11,6 @@ const validationSchema = yup.object({
   default_link: yup.string().required("URL is required"),
 });
 const Optimizer = () => {
-  const dispatch = useDispatch();
   const [randomUrl, setRandomUrl] = useState(null);
 
   const formik = useFormik({
@@ -30,10 +20,9 @@ const Optimizer = () => {
     validationSchema,
     onSubmit: async () => {
       try {
-        const response = await axios.post(
-          // `http://localhost:5000/generate-url`,
-          `https://app.developmental.site/generate-url`,
-
+        const { data, status } = await axios.post(
+          // `https://app.developmental.site/generate-url`,
+          `http://localhost:4000/generate-url`,
           {
             url: formik.values.default_link,
           },
@@ -43,14 +32,11 @@ const Optimizer = () => {
             },
           }
         );
-        if (response.status === 200) {
-          setRandomUrl(response.data.newUrl);
+        if (status === 200) {
+          setRandomUrl(data.newUrl);
         }
-        // setShortUrl(response.data.shortUrl);
-        // setError(null);
       } catch (error) {
         console.error("Error shortening URL:", error.message);
-        // setError("An error occurred while shortening the URL.");
       }
       // openSnackbar({
       //   open: true,

@@ -4,11 +4,12 @@ import { lazy } from "react";
 import MainLayout from "layout/MainLayout";
 import Loadable from "ui-component/Loadable";
 import AuthGuard from "utils/route-guard/AuthGuard";
-import Optimizer from "views/dashboard/Optimzer";
+import Optimizer from "views/dashboard/Optimizer";
 import MainAdvertiser from "views/dashboard/Advertiser";
 import AddAdvertiser from "views/dashboard/Advertiser/AddAdvertiser";
 import Audience from "views/dashboard/Advertiser/Audience";
 import Offers from "views/dashboard/Offers";
+import AddOffer from "views/dashboard/Offers/AddOffer";
 import Campaign from "views/dashboard/Campaign";
 import Dashboard from "views/dashboard/Dashboard";
 
@@ -672,6 +673,10 @@ const MainRoutes = {
     {
       path: "/offers",
       element: <Offers />,
+    },
+    {
+      path: "/offers/add-offer",
+      element: <AddOffer />,
     },
     {
       path: "/campaign",

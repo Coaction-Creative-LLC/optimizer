@@ -2,7 +2,13 @@
 import { FormattedMessage } from "react-intl";
 
 // assets
-import { IconDashboard, IconDeviceAnalytics } from "@tabler/icons";
+import {
+  IconDashboard,
+  IconDeviceAnalytics,
+  IconSquaresFilled,
+  IconArticle,
+  IconSpeakerphone,
+} from "@tabler/icons";
 
 const icons = {
   IconDashboard,
@@ -29,7 +35,7 @@ const dashboard = {
       id: "Advertiser",
       title: <FormattedMessage id="advertiser" />,
       type: "collapse",
-      icon: icons.IconDeviceAnalytics,
+      icon: IconSquaresFilled,
       url: "/advertiser",
       children: [
         {
@@ -49,17 +55,24 @@ const dashboard = {
     {
       id: "Offers",
       title: <FormattedMessage id="offers" />,
-      type: "item",
+      type: "collapse",
+      icon: IconArticle,
       url: "/offers",
-      icon: icons.IconDeviceAnalytics,
-      breadcrumbs: false,
+      children: [
+        {
+          id: "Add Offers",
+          title: <FormattedMessage id="add-offers" />,
+          type: "item",
+          url: "/offers/add-offer",
+        },
+      ],
     },
     {
       id: "Campaign",
       title: <FormattedMessage id="campaign" />,
       type: "item",
       url: "/campaign",
-      icon: icons.IconDeviceAnalytics,
+      icon: IconSpeakerphone,
       breadcrumbs: false,
     },
     {

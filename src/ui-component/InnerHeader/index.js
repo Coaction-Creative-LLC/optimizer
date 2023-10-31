@@ -2,9 +2,11 @@ import { Typography, Box, Grid } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import HomeIcon from "@mui/icons-material/Home";
+import { useNavigate } from "react-router-dom";
 
 const InnerHeader = ({ title, text = [] }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -36,7 +38,12 @@ const InnerHeader = ({ title, text = [] }) => {
                 <ArrowForwardIosIcon fontSize="sm" />
               </Grid>
               <Grid item>
-                <Typography variant="h4" color={theme.palette.common.white}>
+                <Typography
+                  variant="h4"
+                  color={theme.palette.common.white}
+                  onClick={() => navigate(data.url)}
+                  style={{ cursor: "pointer" }}
+                >
                   {data.value}
                 </Typography>
               </Grid>

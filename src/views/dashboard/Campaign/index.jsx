@@ -1,4 +1,3 @@
-import React from "react";
 import InnerHeader from "ui-component/InnerHeader";
 
 const Campaign = () => {
