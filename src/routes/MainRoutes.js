@@ -4,14 +4,6 @@ import { lazy } from "react";
 import MainLayout from "layout/MainLayout";
 import Loadable from "ui-component/Loadable";
 import AuthGuard from "utils/route-guard/AuthGuard";
-import Optimizer from "views/dashboard/Optimizer";
-import MainAdvertiser from "views/dashboard/Advertiser";
-import AddAdvertiser from "views/dashboard/Advertiser/AddAdvertiser";
-import Audience from "views/dashboard/Advertiser/Audience";
-import Offers from "views/dashboard/Offers";
-import AddOffer from "views/dashboard/Offers/AddOffer";
-import Campaign from "views/dashboard/Campaign";
-import Dashboard from "views/dashboard/Dashboard";
 
 // dashboard routing
 const DashboardDefault = Loadable(
@@ -261,6 +253,33 @@ const AdvanceUIToggleButton = Loadable(
 const AdvanceUITreeview = Loadable(
   lazy(() => import("views/ui-elements/advance/UITreeview"))
 );
+
+// custom pages routing
+const DashboardPage = Loadable(lazy(() => import("views/dashboard/Dashboard")));
+const MainAdvertiserPage = Loadable(
+  lazy(() => import("views/dashboard/Advertiser"))
+);
+const AddAdvertiserPage = Loadable(
+  lazy(() => import("views/dashboard/Advertiser/AddAdvertiser"))
+);
+const AudiencePage = Loadable(
+  lazy(() => import("views/dashboard/Advertiser/Audience"))
+);
+const MainOffersPage = Loadable(lazy(() => import("views/dashboard/Offers")));
+const AddOfferPage = Loadable(
+  lazy(() => import("views/dashboard/Offers/AddOffer"))
+);
+const CampaignPage = Loadable(lazy(() => import("views/dashboard/Campaign")));
+const AddCampaignPage = Loadable(
+  lazy(() => import("views/dashboard/Campaign/AddCampaign"))
+);
+const ControlSettingsPage = Loadable(
+  lazy(() => import("views/dashboard/ControlSettings"))
+);
+const TrafficSourcePage = Loadable(
+  lazy(() => import("views/dashboard/TrafficSource"))
+);
+const OptimizerPage = Loadable(lazy(() => import("views/dashboard/Optimizer")));
 
 // pricing page routing
 const PagesPrice1 = Loadable(lazy(() => import("views/pages/pricing/Price1")));
@@ -660,35 +679,47 @@ const MainRoutes = {
     },
     {
       path: "/advertiser",
-      element: <MainAdvertiser />,
+      element: <MainAdvertiserPage />,
     },
     {
       path: "/advertiser/add-advertiser",
-      element: <AddAdvertiser />,
+      element: <AddAdvertiserPage />,
     },
     {
       path: "/advertiser/audience",
-      element: <Audience />,
+      element: <AudiencePage />,
     },
     {
       path: "/offers",
-      element: <Offers />,
+      element: <MainOffersPage />,
     },
     {
       path: "/offers/add-offer",
-      element: <AddOffer />,
+      element: <AddOfferPage />,
     },
     {
       path: "/campaign",
-      element: <Campaign />,
+      element: <CampaignPage />,
+    },
+    {
+      path: "/campaign/add-campaign",
+      element: <AddCampaignPage />,
+    },
+    {
+      path: "/control-settings",
+      element: <ControlSettingsPage />,
+    },
+    {
+      path: "/traffic-source",
+      element: <TrafficSourcePage />,
     },
     {
       path: "/dashboard",
-      element: <Dashboard />,
+      element: <DashboardPage />,
     },
     {
       path: "/optimizer",
-      element: <Optimizer />,
+      element: <OptimizerPage />,
     },
     {
       path: "/dashboard/analytics",

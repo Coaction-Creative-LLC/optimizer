@@ -21,8 +21,7 @@ const Optimizer = () => {
     onSubmit: async () => {
       try {
         const { data, status } = await axios.post(
-          // `https://app.developmental.site/generate-url`,
-          `http://localhost:4000/generate-url`,
+          `https://app.developmental.site/generate-url`,
           {
             url: formik.values.default_link,
           },

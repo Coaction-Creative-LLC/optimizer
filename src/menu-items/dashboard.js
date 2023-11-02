@@ -8,6 +8,8 @@ import {
   IconSquaresFilled,
   IconArticle,
   IconSpeakerphone,
+  IconSettings,
+  IconArrowsTransferDown,
 } from "@tabler/icons";
 
 const icons = {
@@ -28,7 +30,7 @@ const dashboard = {
       title: <FormattedMessage id="dashboard" />,
       type: "item",
       url: "/dashboard",
-      icon: icons.IconDeviceAnalytics,
+      icon: icons.IconDashboard,
       breadcrumbs: false,
     },
     {
@@ -70,9 +72,32 @@ const dashboard = {
     {
       id: "Campaign",
       title: <FormattedMessage id="campaign" />,
-      type: "item",
-      url: "/campaign",
+      type: "collapse",
       icon: IconSpeakerphone,
+      url: "/campaign",
+      children: [
+        {
+          id: "Add Offers",
+          title: <FormattedMessage id="add-campaign" />,
+          type: "item",
+          url: "/campaign/add-campaign",
+        },
+      ],
+    },
+    {
+      id: "ControlSettings",
+      title: <FormattedMessage id="control-settings" />,
+      type: "item",
+      icon: IconSettings,
+      url: "/control-settings",
+      breadcrumbs: false,
+    },
+    {
+      id: "Traffic Source",
+      title: <FormattedMessage id="traffic-source" />,
+      type: "item",
+      url: "/traffic-source",
+      icon: IconArrowsTransferDown,
       breadcrumbs: false,
     },
     {
@@ -80,22 +105,6 @@ const dashboard = {
       title: <FormattedMessage id="optimizer" />,
       type: "item",
       url: "/optimizer",
-      icon: icons.IconDeviceAnalytics,
-      breadcrumbs: false,
-    },
-    {
-      id: "Default",
-      title: <FormattedMessage id="default" />,
-      type: "item",
-      url: "/dashboard/default",
-      icon: icons.IconDashboard,
-      breadcrumbs: false,
-    },
-    {
-      id: "analytics",
-      title: <FormattedMessage id="analytics" />,
-      type: "item",
-      url: "/dashboard/analytics",
       icon: icons.IconDeviceAnalytics,
       breadcrumbs: false,
     },

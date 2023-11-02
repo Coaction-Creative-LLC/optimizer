@@ -1,13 +1,13 @@
 import { OffersFilterOptions, OffersTable } from "components/offers";
 import InnerHeader from "ui-component/InnerHeader";
 
+const text = [
+  {
+    value: "Offers",
+    url: "/offers",
+  },
+];
 const Offers = () => {
-  const text = [
-    {
-      value: "Offers",
-      url: "/offers",
-    },
-  ];
   return (
     <>
       <InnerHeader title={"Offers"} text={text} />
