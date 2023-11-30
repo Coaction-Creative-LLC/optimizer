@@ -6,7 +6,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Checkbox } from "@mui/material";
-
+import { useDispatch } from "react-redux";
+import useGetAudience from "hooks/useGetAudience";
+import Loader from "ui-component/Loader";
+import { openSnackbar } from "store/slices/snackbar";
+import format from "date-fns/format";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor:
@@ -30,54 +34,32 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(name, status, date, timeZone, currency) {
-  return { name, status, date, timeZone, currency };
-}
 
-const rows = [
-  createData("Lorem Ipsum Dolor", "Enabled", "10/5/23", "US/Pacific", "USD"),
-  createData("Lorem Ipsum Dolor", "Enabled", "10/5/23", "US/Pacific", "USD"),
-  createData("Lorem Ipsum Dolor", "Enabled", "10/5/23", "US/Pacific", "USD"),
-  createData("Lorem Ipsum Dolor", "Enabled", "10/5/23", "US/Pacific", "USD"),
-  createData("Lorem Ipsum Dolor", "Enabled", "10/5/23", "US/Pacific", "USD"),
-  createData(
-    "Lorem Ipsum Dolor",
-    "Enabled",
-    "10/5/23",
-    "America/Los_Angeles",
-    "USD"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "Enabled",
-    "10/5/23",
-    "America/Los_Angeles",
-    "USD"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "Enabled",
-    "10/5/23",
-    "America/Los_Angeles",
-    "USD"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "Enabled",
-    "10/5/23",
-    "America/Los_Angeles",
-    "USD"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "Enabled",
-    "10/5/23",
-    "America/Los_Angeles",
-    "USD"
-  ),
-];
 
 const AudienceTable = () => {
+  const dispatch = useDispatch();
+  const { data = {}, isLoading, error } = useGetAudience();
+  const {data: audience =[]} = data;
+  console.log(audience, 'audience')
+
+  debugger;
+  if (isLoading) {
+    return (<Loader />);
+  }
+
+  if (error) {
+dispatch(
+  openSnackbar({
+    open: true,
+    message: error.msg,
+    variant: "alert", 
+    alert: {
+      color: "error",
+    },
+    close: false,
+  })
+)
+  }
   return (
     <div style={{ height: 400, width: "100%" }}>
       <TableContainer>
@@ -89,7 +71,7 @@ const AudienceTable = () => {
         >
           <TableHead>
             <TableRow>
-              <StyledTableCell>Advertiser Name</StyledTableCell>
+              <StyledTableCell>Audience Name</StyledTableCell>
               <StyledTableCell align="left">Status</StyledTableCell>
               <StyledTableCell align="left">Date</StyledTableCell>
               <StyledTableCell align="left">Time Zone</StyledTableCell>
@@ -97,8 +79,8 @@ const AudienceTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={row.name}>
+            {audience.map((row) => (
+              <StyledTableRow key={row.audienceName}>
                 <StyledTableCell
                   component="th"
                   id={row.name}
@@ -111,12 +93,12 @@ const AudienceTable = () => {
                       "aria-labelledby": row.name,
                     }}
                   />
-                  {row.name}
+                  {row.audienceName}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.status}</StyledTableCell>
-                <StyledTableCell align="left">{row.date}</StyledTableCell>
-                <StyledTableCell align="left">{row.timeZone}</StyledTableCell>
-                <StyledTableCell align="left">{row.currency}</StyledTableCell>
+                <StyledTableCell align="left">{row.status ? "Enabled" : "Disabled"}</StyledTableCell>
+                <StyledTableCell align="left">{ format(new Date(),'MM/d/yyyy' )}</StyledTableCell>
+                <StyledTableCell align="left">{row.timeZone === "" ? "US/Pacific" : "None"}</StyledTableCell>
+                <StyledTableCell align="left">{row.Currency }</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

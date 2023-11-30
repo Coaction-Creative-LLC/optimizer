@@ -10,10 +10,12 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { AddCircle, KeyboardArrowDown, Search } from "@mui/icons-material";
 import { searchData, tagsData } from "./data";
+import { useNavigate } from "react-router-dom";
 
 const filter = createFilterOptions();
 
 const FilterOptions = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
 
   return (
@@ -232,9 +234,10 @@ const FilterOptions = () => {
         gap={1}
       >
         <Typography variant="h5" color={"#616161"}>
-          Add Advertiser
+          Add Advertiserrrr
         </Typography>
         <AddCircle
+        onClick={() => { navigate('/advertiser/add-advertiser') }}
           style={{
             color: theme.palette.secondary.dark,
             cursor: "pointer",

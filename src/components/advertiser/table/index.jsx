@@ -6,7 +6,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Checkbox } from "@mui/material";
-
+import useGetAdvertisers from "hooks/useGetetAdvertisers";
+import Loader from "ui-component/Loader";
+import { useDispatch } from "react-redux";
+import { openSnackbar } from "store/slices/snackbar";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor:
@@ -30,112 +33,27 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(
-  name,
-  accountManager,
-  login,
-  website,
-  tags,
-  created,
-  notes
-) {
-  return { name, accountManager, login, website, tags, created, notes };
-}
-
-const rows = [
-  createData(
-    "Active Sun",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 0",
-    "10/5/23",
-    "Note 0"
-  ),
-  createData(
-    "Church.org.LLC",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 1",
-    "10/5/23",
-    "Note 1"
-  ),
-  createData(
-    "IT Media",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 2",
-    "10/5/23",
-    "Note 2"
-  ),
-  createData(
-    "Kvellz",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 3",
-    "10/5/23",
-    "Note 3"
-  ),
-  createData(
-    "Perform CB",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 4",
-    "10/5/23",
-    "Note 4"
-  ),
-  createData(
-    "RGR Marketing",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 5",
-    "10/5/23",
-    "Note 5"
-  ),
-  createData(
-    "Madrivo",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 6",
-    "10/5/23",
-    "Note 6"
-  ),
-  createData(
-    "Divvy",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 7",
-    "10/5/23",
-    "Note 7"
-  ),
-  createData(
-    "Lead Pops",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 8",
-    "10/5/23",
-    "Note 8"
-  ),
-  createData(
-    "Zeta Global",
-    "Charlie Guerrero",
-    "Login",
-    "https://lorem ipsumdolor.com",
-    "Tag 9",
-    "10/5/23",
-    "Note 9"
-  ),
-];
-
 const AdvertiserTable = () => {
+  const dispatch = useDispatch();
+  const { data, isLoading, error } = useGetAdvertisers();
+  if (isLoading) {
+    return (<Loader />);
+  }
+
+  if (error) {
+dispatch(
+  openSnackbar({
+    open: true,
+    message: error.msg,
+    variant: "alert", 
+    alert: {
+      color: "error",
+    },
+    close: false,
+  })
+)
+  }
+
   return (
     <div style={{ height: 400, width: "100%" }}>
       <TableContainer>
@@ -157,7 +75,7 @@ const AdvertiserTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {data.advertisers.map((row) => (
               <StyledTableRow key={row.name}>
                 <StyledTableCell
                   component="th"
@@ -174,13 +92,13 @@ const AdvertiserTable = () => {
                   {row.name}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.accountManager}
+                  {row.accountManager || 'N/A'}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.login}</StyledTableCell>
+                <StyledTableCell align="left">{row.login || 'N/A'}</StyledTableCell>
                 <StyledTableCell align="left">{row.website}</StyledTableCell>
-                <StyledTableCell align="left">{row.tags}</StyledTableCell>
-                <StyledTableCell align="left">{row.created}</StyledTableCell>
-                <StyledTableCell align="left">{row.notes}</StyledTableCell>
+                <StyledTableCell align="left">{row.tags || 'N/A'}</StyledTableCell>
+                <StyledTableCell align="left">{row.createdAt }</StyledTableCell>
+                <StyledTableCell align="left">{row.note || 'N/A'}</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

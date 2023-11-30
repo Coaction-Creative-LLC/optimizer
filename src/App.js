@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 // routing
 import Routes from "routes";
 
@@ -20,8 +19,11 @@ import { JWTProvider as AuthProvider } from "contexts/JWTContext";
 // import { FirebaseProvider as AuthProvider } from 'contexts/FirebaseContext';
 // import { AWSCognitoProvider as AuthProvider } from 'contexts/AWSCognitoContext';
 // import { Auth0Provider as AuthProvider } from 'contexts/Auth0Context';
-
+import { QueryClient, QueryClientProvider } from "react-query";
 // ==============================|| APP ||============================== //
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { refetchOnWindowFocus: false } },
+});
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -41,10 +43,12 @@ const App = () => {
           <NavigationScroll>
             <AuthProvider>
               <>
-                <Notistack>
-                  <Routes />
-                  <Snackbar />
-                </Notistack>
+                <QueryClientProvider client={queryClient}>
+                  <Notistack>
+                    <Routes />
+                    <Snackbar />
+                  </Notistack>
+                </QueryClientProvider>
               </>
             </AuthProvider>
           </NavigationScroll>

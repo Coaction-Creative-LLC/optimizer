@@ -6,6 +6,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Checkbox } from "@mui/material";
+import Loader from "ui-component/Loader";
+import { useDispatch } from "react-redux";
+import { openSnackbar } from "store/slices/snackbar";
+import useGetOffers from "hooks/useGetOffers";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -30,144 +34,32 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(
-  name,
-  trackingDomain,
-  uniqueVersion,
-  conversion,
-  uniqueClicks,
-  prelanderClicks,
-  prelanderCTR,
-  Clicks,
-  CTR
-) {
-  return {
-    name,
-    trackingDomain,
-    uniqueVersion,
-    conversion,
-    uniqueClicks,
-    prelanderClicks,
-    prelanderCTR,
-    Clicks,
-    CTR,
-  };
-}
-
-const rows = [
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-  createData(
-    "Lorem Ipsum Dolor",
-    "https//:www.lorem ipsum.com",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0",
-    "0.0%"
-  ),
-];
-
 const OffersTable = () => {
+  const dispatch = useDispatch();
+  const {
+    data: { data: offers = [] } = {},
+    isLoading,
+    error,
+  } = useGetOffers();
+console.log(offers);
+debugger;
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    dispatch(
+      openSnackbar({
+        open: true,
+        message: error.msg,
+        variant: "alert",
+        alert: {
+          color: "error",
+        },
+        close: false,
+      })
+    );
+  }
   return (
     <div style={{ height: 400, width: "100%" }}>
       <TableContainer>
@@ -191,7 +83,7 @@ const OffersTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {offers.map((row) => (
               <StyledTableRow key={row.name}>
                 <StyledTableCell
                   component="th"
@@ -208,23 +100,23 @@ const OffersTable = () => {
                   {row.name}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.trackingDomain}
+                  {row.trackingDomain || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.uniqueVersion}
+                  {row.uniqueVersion || "N/A"}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.conversion}</StyledTableCell>
+                <StyledTableCell align="left">{row.conversion || "N/A"}</StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.uniqueClicks}
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  {row.prelanderClicks}
+                  {row.uniqueClicks || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.prelanderCTR}
+                  {row.prelanderClicks || "N/A"}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.Clicks}</StyledTableCell>
-                <StyledTableCell align="left">{row.CTR}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.prelanderCTR || "N/A"}
+                </StyledTableCell>
+                <StyledTableCell align="left">{row.Clicks || "N/A"}</StyledTableCell>
+                <StyledTableCell align="left">{row.CTR || "N/A"}</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
