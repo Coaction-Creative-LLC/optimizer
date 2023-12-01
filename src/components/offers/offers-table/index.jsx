@@ -41,8 +41,6 @@ const OffersTable = () => {
     isLoading,
     error,
   } = useGetOffers();
-console.log(offers);
-debugger;
   if (isLoading) {
     return <Loader />;
   }

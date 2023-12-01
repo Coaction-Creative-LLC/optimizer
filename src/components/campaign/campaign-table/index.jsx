@@ -6,6 +6,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Checkbox } from "@mui/material";
+import { useDispatch } from "react-redux";
+import useGetCampaigns from "hooks/useGetCampaigns";
+import Loader from "ui-component/Loader";
+import { openSnackbar } from "store/slices/snackbar";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -30,102 +34,31 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(
-  name,
-  uniqueVersion,
-  conversion,
-  uniqueClicks,
-  prelanderClicks,
-  prelanderCTR,
-  Clicks
-) {
-  return {
-    name,
-    uniqueVersion,
-    conversion,
-    uniqueClicks,
-    prelanderClicks,
-    prelanderCTR,
-    Clicks,
-  };
-}
-
-const rows = [
-  createData(
-    "KC10.3 - Daily Verse - Brazil - Mobile - Max CVR",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0"
-  ),
-  createData(
-    "KC9.27 - Luxury SUVs - Tier 1 All - Mobile - Max CVR",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0"
-  ),
-  createData(
-    "CH9.28 - Debt - Tier 2 - Mobile - Max CPA (CHANGED 10.3)",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0"
-  ),
-  createData(
-    "KC9.28 - Botox V3 - Tier 2 All - Mobile - Max CVR",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0"
-  ),
-  createData(
-    "KC10.2 - Botox V3 - Tier 1 (Except US) - Mobile - Max CVR",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0"
-  ),
-  createData(
-    "KC9.28 - ADHD - Tier 1 All - Mobile - Max CVR",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0"
-  ),
-  createData(
-    "KC/CDG9.21 - Patent Lawyer/Tier 2 Group",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0"
-  ),
-  createData(
-    "CDG9.27 - Personal Loan - Tier 2 Group - Mobile",
-    "0",
-    "0",
-    "0",
-    "0%",
-    "0%",
-    "0"
-  ),
-];
-
 const CampaignTable = () => {
+  const dispatch = useDispatch();
+  const {
+    data: { data: campaigns = [] } = {},
+    isLoading,
+    error,
+  } = useGetCampaigns();
+  debugger;
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    dispatch(
+      openSnackbar({
+        open: true,
+        message: error.msg,
+        variant: "alert",
+        alert: {
+          color: "error",
+        },
+        close: false,
+      })
+    );
+  }
   return (
     <div style={{ height: 400, width: "100%" }}>
       <TableContainer>
@@ -147,7 +80,7 @@ const CampaignTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {campaigns.map((row) => (
               <StyledTableRow key={row.name}>
                 <StyledTableCell
                   component="th"
@@ -164,19 +97,19 @@ const CampaignTable = () => {
                   {row.name}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.uniqueVersion}
+                  {row.uniqueVersion || 0}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.conversion}</StyledTableCell>
+                <StyledTableCell align="left">{row.conversion || 0}</StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.uniqueClicks}
-                </StyledTableCell>
-                <StyledTableCell align="left">
-                  {row.prelanderClicks}
+                  {row.uniqueClicks || 0}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.prelanderCTR}
+                  {row.prelanderClicks || '0%'}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.Clicks}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.prelanderCTR || "0%"}
+                </StyledTableCell>
+                <StyledTableCell align="left">{row.Clicks || 0}</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
