@@ -134,6 +134,18 @@ const AddCampaign = () => {
       url: "/add-offer",
     },
   ];
+
+  const resetForm = () => {
+    Array.from(
+      document
+        .getElementsByTagName("form")[0]
+        .querySelectorAll("button.MuiAutocomplete-clearIndicator")
+    ).forEach((clearSearchButton) => {
+      clearSearchButton.click();
+    });
+    formik.resetForm();
+  };
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -146,7 +158,6 @@ const AddCampaign = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       console.log(values);
-      debugger;
       setLoader(true);
       try {
         const result = await createCampaign(values);
@@ -163,7 +174,7 @@ const AddCampaign = () => {
             })
           );
           setLoader(false);
-          formik.resetForm();
+          resetForm();
         }
       } catch (error) {
         dispatch(
@@ -226,7 +237,7 @@ const AddCampaign = () => {
                     forcePopupIcon
                     popupIcon={<KeyboardArrowDown />}
                     onChange={(event, newValue) => {
-                      formik.setFieldValue("offer", newValue._id);
+                      formik.setFieldValue("offer", newValue?._id);
                     }}
                     filterOptions={(options, params) => {
                       const filtered = filter(options, params);
@@ -243,7 +254,6 @@ const AddCampaign = () => {
                       (a, b) => -b.name.localeCompare(a.name)
                     )}
                     getOptionLabel={(option) => option.name}
-                    defaultValue={offers[0]}
                     freeSolo
                     renderOption={(props, option) => (
                       <Box component="li" {...props}>
@@ -303,7 +313,7 @@ const AddCampaign = () => {
                     forcePopupIcon
                     popupIcon={<KeyboardArrowDown />}
                     onChange={(event, newValue) => {
-                      formik.setFieldValue("trafficSource", newValue._id);
+                      formik.setFieldValue("trafficSource", newValue?._id);
                     }}
                     filterOptions={(options, params) => {
                       const filtered = filter(options, params);
@@ -385,7 +395,7 @@ const AddCampaign = () => {
                     forcePopupIcon
                     popupIcon={<KeyboardArrowDown />}
                     onChange={(event, newValue) => {
-                      formik.setFieldValue("country", newValue.code);
+                      formik.setFieldValue("country", newValue?.code);
                     }}
                     filterOptions={(options, params) => {
                       const filtered = filter(options, params);

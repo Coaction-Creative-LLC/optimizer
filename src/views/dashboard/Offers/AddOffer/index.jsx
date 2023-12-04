@@ -129,7 +129,6 @@ const AddOffer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       setLoader(true);
       try {
         const result = await createOffer(values);
