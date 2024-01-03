@@ -3,7 +3,7 @@ import { useMutation } from 'react-query';
 import axios from 'axios';
 
 const postAdvertiser = async (data) => {
-  const response = await axios.post('https://developmentalsite-9a1468bb97a5.herokuapp.com/advertiser/create', data); // Replace with your API endpoint
+  const response = await axios.post('https://developmentalsite-9a1468bb97a5.herokuapp.com/advertisers/create', data); // Replace with your API endpoint
   return response.data;
 };
 

@@ -3,19 +3,17 @@ import {
   Container,
   FormControl,
   InputLabel,
-  InputBase,
   Grid,
   ButtonBase,
-  Autocomplete,
-  createFilterOptions,
   TextField,
+  MenuItem,
 } from "@mui/material";
 import InnerHeader from "ui-component/InnerHeader";
 import { styled } from "@mui/material/styles";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import COUNTRIES from "countryList";
-import { useFormik } from "formik";
+import { Formik, Form } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
@@ -24,7 +22,6 @@ import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
 import useGetAudience from "hooks/useGetAudience";
 import useGetOffers from "hooks/useGetOffers";
-const filter = createFilterOptions();
 
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -36,12 +33,13 @@ const MainHeading = styled("div")(({ theme }) => ({
   marginBottom: 16,
 }));
 
-const CustomStrapInput = styled(InputBase)(({ theme }) => ({
+const CustomStrapInput = styled(TextField)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(2),
   },
   "& .MuiInputBase-input": {
     borderRadius: 12,
+    padding: 6,
     backgroundColor:
       theme.palette.mode === "dark"
         ? theme.palette.common.black
@@ -53,12 +51,43 @@ const CustomStrapInput = styled(InputBase)(({ theme }) => ({
       width: "320px",
     },
     [theme.breakpoints.up("md")]: {
+      width: "540px",
+    },
+  },
+}));
+const CustomStrapAutoComplete = styled(TextField)(({ theme }) => ({
+  "& .MuiInputBase-root": {
+    position: "relative",
+    borderRadius: 12,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? theme.palette.common.black
+        : theme.palette.secondary.light,
+    height: "58px",
+    flexShrink: 0,
+    "&:before": {
+      content: "none",
+    },
+    "&:after": {
+      content: "none",
+    },
+    "& .MuiSelect-icon": {
+      display: "none",
+    },
+  },
+  "& .MuiInputBase-input": {
+    paddingLeft: 12,
+    paddingRight: "39px",
+    [theme.breakpoints.down("md")]: {
+      width: "320px",
+    },
+    [theme.breakpoints.up("md")]: {
       width: "500px",
     },
   },
 }));
 
-const CustomGreyStrapInput = styled(InputBase)(({ theme }) => ({
+const CustomGreyStrapInput = styled(TextField)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(2),
   },
@@ -75,7 +104,7 @@ const CustomGreyStrapInput = styled(InputBase)(({ theme }) => ({
       width: "320px",
     },
     [theme.breakpoints.up("md")]: {
-      width: "500px",
+      width: "540px",
     },
   },
 }));
@@ -98,14 +127,6 @@ const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
     theme.palette.mode === "dark"
       ? theme.palette.common.white
       : theme.palette.common.black,
-}));
-
-const CustomErrorMessage = styled(Box)(({ theme }) => ({
-  marginTop: "6px",
-  marginRight: "20px",
-  textAlign: "right",
-  position: "relative",
-  color: theme.palette.secondary.dark,
 }));
 
 const validationSchema = yup.object({
@@ -134,384 +155,323 @@ const AddCampaign = () => {
       url: "/add-offer",
     },
   ];
-
-  const resetForm = () => {
-    Array.from(
-      document
-        .getElementsByTagName("form")[0]
-        .querySelectorAll("button.MuiAutocomplete-clearIndicator")
-    ).forEach((clearSearchButton) => {
-      clearSearchButton.click();
-    });
-    formik.resetForm();
+  const iniitialValues = {
+    name: "",
+    offer: "",
+    trafficSource: "",
+    country: "",
+    coastModel: "",
+    finalUrl: "",
   };
-
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      offer: "",
-      trafficSource: "",
-      country: "",
-      coastModel: "",
-      finalUrl: "",
-    },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      console.log(values);
-      setLoader(true);
-      try {
-        const result = await createCampaign(values);
-        if (result.status === 200) {
-          dispatch(
-            openSnackbar({
-              open: true,
-              message: result.msg,
-              variant: "alert",
-              alert: {
-                color: "success",
-              },
-              close: false,
-            })
-          );
-          setLoader(false);
-          resetForm();
-        }
-      } catch (error) {
+  const submitHandler = async (values, { resetForm }) => {
+    setLoader(true);
+    try {
+      const result = await createCampaign(values);
+      if (result.status === 200) {
         dispatch(
           openSnackbar({
             open: true,
-            message: error.msg,
+            message: result.msg,
             variant: "alert",
             alert: {
-              color: "error",
+              color: "success",
             },
             close: false,
           })
         );
         setLoader(false);
+        resetForm();
       }
-    },
-  });
+    } catch (error) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: error.msg,
+          variant: "alert",
+          alert: {
+            color: "error",
+          },
+          close: false,
+        })
+      );
+      setLoader(false);
+    }
+  };
+
   return (
     <Box sx={{ height: "100%" }}>
       {loader && <Loader />}
       <InnerHeader title={"Add Campaign"} text={text} />
-      <form onSubmit={formik.handleSubmit}>
-        <Container maxWidth="lg" style={{ marginTop: "3rem" }}>
-          <MainHeading>Add Campaign</MainHeading>
-          <Grid display={"flex"} gap={{ md: 4 }}>
-            <Grid xs={6}>
-              <Box display={"flex"} flexDirection={"column"} rowGap={3}>
-                <FormControl variant="standard">
-                  <InputLabel
-                    shrink
-                    htmlFor="name"
-                    style={{ color: "#616161" }}
-                  >
-                    Campaign Name*
-                  </InputLabel>
-                  <CustomStrapInput
-                    defaultValue=""
-                    placeholder="Please Enter Campaign Name"
-                    id="name"
-                    name="name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                  />
-                  {formik.touched.name && formik.errors.name && (
-                    <CustomErrorMessage>
-                      {formik.errors.name}
-                    </CustomErrorMessage>
-                  )}
-                </FormControl>
-                <Box>
-                  <InputLabel
-                    shrink
-                    htmlFor="assign-offer"
-                    sx={{ color: "#616161" }}
-                  >
-                    Assign Offer
-                  </InputLabel>
-                  <Autocomplete
-                    id="assign-offer"
-                    forcePopupIcon
-                    popupIcon={<KeyboardArrowDown />}
-                    onChange={(event, newValue) => {
-                      formik.setFieldValue("offer", newValue?._id);
-                    }}
-                    filterOptions={(options, params) => {
-                      const filtered = filter(options, params);
-                      const { inputValue } = params;
-                      const isExisting = options.some(
-                        (option) => inputValue === option
-                      );
-                      if (inputValue !== "" && !isExisting) {
-                        filtered.push(`Add "${inputValue}"`);
-                      }
-                      return filtered;
-                    }}
-                    options={offers.sort(
-                      (a, b) => -b.name.localeCompare(a.name)
-                    )}
-                    getOptionLabel={(option) => option.name}
-                    freeSolo
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.name}
-                      </Box>
-                    )}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "12px",
-                      },
-                      "& input": {
-                        bgcolor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.common.black
-                            : theme.palette.secondary.light,
-                      },
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        name="search"
-                        size="small"
-                        placeholder="Select Offer"
-                        InputProps={{
-                          ...params.InputProps,
-                          sx: {
-                            padding: 1,
-                            height: "58px",
-                            bgcolor:
-                              theme.palette.mode === "dark"
-                                ? theme.palette.common.black
-                                : theme.palette.secondary.light,
-                            "& fieldset": { border: "none" },
-                          },
-                        }}
-                      />
-                    )}
-                  />
-                  {formik.touched.offer && formik.errors.offer && (
-                    <CustomErrorMessage>
-                      {formik.errors.offer}
-                    </CustomErrorMessage>
-                  )}
-                </Box>
-                <Box>
-                  <InputLabel
-                    shrink
-                    htmlFor="assignTrafficSource"
-                    sx={{
-                      color: "#616161",
-                    }}
-                  >
-                    Assign Traffic Source
-                  </InputLabel>
-                  <Autocomplete
-                    id="assignTrafficSource"
-                    forcePopupIcon
-                    popupIcon={<KeyboardArrowDown />}
-                    onChange={(event, newValue) => {
-                      formik.setFieldValue("trafficSource", newValue?._id);
-                    }}
-                    filterOptions={(options, params) => {
-                      const filtered = filter(options, params);
-                      const { inputValue } = params;
-                      const isExisting = options.some(
-                        (option) => inputValue === option
-                      );
-                      if (inputValue !== "" && !isExisting) {
-                        filtered.push(`Add "${inputValue}"`);
-                      }
-                      return filtered;
-                    }}
-                    options={audience.sort(
-                      (a, b) => -b.audienceName.localeCompare(a.audienceName)
-                    )}
-                    getOptionLabel={(option) => option.audienceName}
-                    defaultValue={audience[0]}
-                    freeSolo
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.audienceName}
-                      </Box>
-                    )}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "12px",
-                      },
-                      "& input": {
-                        bgcolor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.common.black
-                            : theme.palette.secondary.light,
-                      },
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        name="search"
-                        size="small"
-                        placeholder="Select Traffic Source"
-                        InputProps={{
-                          ...params.InputProps,
-                          sx: {
-                            padding: 1,
-                            height: "58px",
-                            bgcolor:
-                              theme.palette.mode === "dark"
-                                ? theme.palette.common.black
-                                : theme.palette.secondary.light,
-                            "& fieldset": { border: "none" },
-                          },
-                        }}
-                      />
-                    )}
-                  />
-                  {formik.touched.trafficSource &&
-                    formik.errors.trafficSource && (
-                      <CustomErrorMessage>
-                        {formik.errors.trafficSource}
-                      </CustomErrorMessage>
-                    )}
-                </Box>
-              </Box>
-            </Grid>
-            <Grid xs={6}>
-              <Box display={"flex"} flexDirection={"column"} rowGap={3}>
-                <Box>
-                  <InputLabel
-                    shrink
-                    htmlFor="countries"
-                    sx={{
-                      color: "#616161",
-                    }}
-                  >
-                    Select Country
-                  </InputLabel>
-                  <Autocomplete
-                    id="countries"
-                    forcePopupIcon
-                    popupIcon={<KeyboardArrowDown />}
-                    onChange={(event, newValue) => {
-                      formik.setFieldValue("country", newValue?.code);
-                    }}
-                    filterOptions={(options, params) => {
-                      const filtered = filter(options, params);
-                      const { inputValue } = params;
-                      const isExisting = options.some(
-                        (option) => inputValue === option
-                      );
-                      if (inputValue !== "" && !isExisting) {
-                        filtered.push(`Add "${inputValue}"`);
-                      }
-                      return filtered;
-                    }}
-                    options={COUNTRIES.sort(
-                      (a, b) => -b.name.localeCompare(a.name)
-                    )}
-                    getOptionLabel={(option) => option.name}
-                    freeSolo
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.name}
-                      </Box>
-                    )}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "12px",
-                      },
-                      "& input": {
-                        bgcolor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.common.black
-                            : theme.palette.secondary.light,
-                      },
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        name="search"
-                        size="small"
-                        placeholder="Select Country"
-                        InputProps={{
-                          ...params.InputProps,
-                          sx: {
-                            padding: 1,
-                            height: "58px",
-                            bgcolor:
-                              theme.palette.mode === "dark"
-                                ? theme.palette.common.black
-                                : theme.palette.secondary.light,
-                            "& fieldset": { border: "none" },
-                          },
-                        }}
-                      />
-                    )}
-                  />
-                  {formik.touched.country && formik.errors.country && (
-                    <CustomErrorMessage>
-                      {formik.errors.country}
-                    </CustomErrorMessage>
-                  )}
-                </Box>
-                <FormControl variant="standard">
-                  <InputLabel
-                    shrink
-                    htmlFor="s2sPostbackURL"
-                    sx={{
-                      color: "#616161",
-                    }}
-                  >
-                    Coast Model
-                  </InputLabel>
+      <Formik
+        initialValues={iniitialValues}
+        validationSchema={validationSchema}
+        onSubmit={submitHandler}
+      >
+        {({
+          values,
+          touched,
+          errors,
+          handleChange,
+          handleSubmit,
+          setFieldValue,
+          enableReinitialize,
+        }) => {
+          return (
+            <Form onSubmit={handleSubmit}>
+              <Container maxWidth="lg" style={{ marginTop: "3rem" }}>
+                <MainHeading>Add Campaign</MainHeading>
+                <Grid display={"flex"} gap={{ md: 4 }}>
+                  <Grid xs={6}>
+                    <Box display={"flex"} flexDirection={"column"} rowGap={3}>
+                      <FormControl variant="standard">
+                        <InputLabel
+                          shrink
+                          htmlFor="name"
+                          style={{ color: "#616161" }}
+                        >
+                          Campaign Name*
+                        </InputLabel>
+                        <CustomStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter Campaign Name"
+                          id="name"
+                          name="name"
+                          value={values.name}
+                          error={touched?.name && errors?.name}
+                          helperText={touched?.name && errors?.name}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
 
-                  <CustomStrapInput
-                    defaultValue=""
-                    placeholder="Please Enter Campaign Name"
-                    id="coastModel"
-                    name="coastModel"
-                    value={formik.values.coastModel}
-                    onChange={formik.handleChange}
-                  />
-                  {formik.touched.coastModel && formik.errors.coastModel && (
-                    <CustomErrorMessage>
-                      {formik.errors.coastModel}
-                    </CustomErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl variant="standard">
-                  <InputLabel
-                    shrink
-                    htmlFor="s2sPostbackURL"
-                    sx={{
-                      color: "#616161",
-                    }}
-                  >
-                    Final URL
-                  </InputLabel>
+                      <Box>
+                        <InputLabel
+                          shrink
+                          htmlFor="assign-offer"
+                          sx={{ color: "#616161" }}
+                        >
+                          Assign Offer
+                        </InputLabel>
+                        <CustomStrapAutoComplete
+                          type={"text"}
+                          variant="standard"
+                          name="offer"
+                          select
+                          onChange={handleChange}
+                          error={touched?.offer && Boolean(errors?.offer)}
+                          helperText={touched?.offer && errors?.offer}
+                          value={values.offer}
+                          fullWidth
+                          SelectProps={{
+                            displayEmpty: true,
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                            "& input": {
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.common.black
+                                  : theme.palette.secondary.light,
+                              border: "none",
+                            },
+                          }}
+                          InputProps={{
+                            endAdornment: <KeyboardArrowDown />,
+                          }}
+                        >
+                          <MenuItem value={""} disabled>
+                            Please select an Offer
+                          </MenuItem>
+                          {offers?.map((item, index) => (
+                            <MenuItem
+                              value={item?._id}
+                              key={`${index}-categories-type-${item?._id}`}
+                            >
+                              {item?.name}
+                            </MenuItem>
+                          ))}
+                        </CustomStrapAutoComplete>
+                      </Box>
 
-                  <CustomGreyStrapInput
-                    defaultValue=""
-                    placeholder="Please Enter Campaign Name"
-                    id="finalUrl"
-                    name="finalUrl"
-                    value={formik.values.finalUrl}
-                    onChange={formik.handleChange}
-                  />
-                  {formik.touched.finalUrl && formik.errors.finalUrl && (
-                    <CustomErrorMessage>
-                      {formik.errors.finalUrl}
-                    </CustomErrorMessage>
-                  )}
-                </FormControl>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-        <CustomStrapButton type="submit">Add Campaign</CustomStrapButton>
-      </form>
+                      <Box>
+                        <InputLabel
+                          shrink
+                          htmlFor="assignTrafficSource"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Assign Traffic Source
+                        </InputLabel>
+                        <CustomStrapAutoComplete
+                          type={"text"}
+                          variant="standard"
+                          name="trafficSource"
+                          select
+                          onChange={handleChange}
+                          error={
+                            touched?.trafficSource &&
+                            Boolean(errors?.trafficSource)
+                          }
+                          helperText={
+                            touched?.trafficSource && errors?.trafficSource
+                          }
+                          value={values.trafficSource}
+                          fullWidth
+                          SelectProps={{
+                            displayEmpty: true,
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                            "& input": {
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.common.black
+                                  : theme.palette.secondary.light,
+                              border: "none",
+                            },
+                          }}
+                          InputProps={{
+                            endAdornment: <KeyboardArrowDown />,
+                          }}
+                        >
+                          <MenuItem value={""} disabled>
+                            Please select an Audience
+                          </MenuItem>
+                          {audience?.map((item, index) => (
+                            <MenuItem
+                              value={item?._id}
+                              key={`${index}-categories-type-${item?._id}`}
+                            >
+                              {item?.audienceName}
+                            </MenuItem>
+                          ))}
+                        </CustomStrapAutoComplete>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid xs={6}>
+                    <Box display={"flex"} flexDirection={"column"} rowGap={3}>
+                      <Box>
+                        <InputLabel
+                          shrink
+                          htmlFor="countries"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Select Country
+                        </InputLabel>
+                        <CustomStrapAutoComplete
+                          type={"text"}
+                          variant="standard"
+                          name="country"
+                          select
+                          onChange={handleChange}
+                          error={touched?.country && Boolean(errors?.country)}
+                          helperText={touched?.country && errors?.country}
+                          value={values.country}
+                          fullWidth
+                          SelectProps={{
+                            displayEmpty: true,
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                            "& input": {
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.common.black
+                                  : theme.palette.secondary.light,
+                              border: "none",
+                            },
+                          }}
+                          InputProps={{
+                            endAdornment: <KeyboardArrowDown />,
+                          }}
+                        >
+                          <MenuItem value={""} disabled>
+                            Please select a Country
+                          </MenuItem>
+                          {COUNTRIES?.map((item, index) => (
+                            <MenuItem
+                              value={item?.code}
+                              key={`${index}-categories-type-${item?.code}`}
+                            >
+                              {item?.name}
+                            </MenuItem>
+                          ))}
+                        </CustomStrapAutoComplete>
+                      </Box>
+                      <FormControl variant="standard">
+                        <InputLabel
+                          shrink
+                          htmlFor="s2sPostbackURL"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Coast Model
+                        </InputLabel>
+
+                        <CustomStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter Coast Model"
+                          id="coastModel"
+                          coastModel="coastModel"
+                          value={values.coastModel}
+                          error={touched?.coastModel && errors?.coastModel}
+                          helperText={touched?.coastModel && errors?.coastModel}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
+                      <FormControl variant="standard">
+                        <InputLabel
+                          shrink
+                          htmlFor="s2sPostbackURL"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Final URL
+                        </InputLabel>
+
+                        <CustomGreyStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter Campaign Name"
+                          id="finalUrl"
+                          name="finalUrl"
+                          error={touched?.finalUrl && errors?.finalUrl}
+                          helperText={touched?.finalUrl && errors?.finalUrl}
+                          value={values.finalUrl}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Container>
+              <CustomStrapButton type="submit">Add Campaign</CustomStrapButton>
+            </Form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 };

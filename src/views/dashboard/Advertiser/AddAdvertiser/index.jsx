@@ -6,10 +6,11 @@ import {
   InputBase,
   Grid,
   ButtonBase,
+  TextField,
 } from "@mui/material";
 import InnerHeader from "ui-component/InnerHeader";
 import { styled } from "@mui/material/styles";
-import { useFormik } from "formik";
+import { useFormik, Formik, Form } from "formik";
 import * as yup from "yup";
 import useAddAdvertiser from "hooks/useCreateAdvertiser";
 import { openSnackbar } from "store/slices/snackbar";
@@ -20,7 +21,7 @@ import { useState } from "react";
 const validationSchema = yup.object({
   name: yup.string().required("name is required"),
   website: yup.string().required("Website URL is required"),
-  notes: yup.string()
+  notes: yup.string(),
 });
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -32,12 +33,13 @@ const MainHeading = styled("div")(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
-const CustomStrapInput = styled(InputBase)(({ theme }) => ({
+const CustomStrapInput = styled(TextField)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(2),
   },
   "& .MuiInputBase-input": {
     borderRadius: 12,
+    padding: 6,
     backgroundColor:
       theme.palette.mode === "dark"
         ? theme.palette.common.black
@@ -49,11 +51,10 @@ const CustomStrapInput = styled(InputBase)(({ theme }) => ({
       width: "320px",
     },
     [theme.breakpoints.up("md")]: {
-      width: "500px",
+      width: "540px",
     },
   },
 }));
-
 const CustomStrapTextArea = styled(InputBase)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(2),
@@ -95,59 +96,50 @@ const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
       ? theme.palette.common.white
       : theme.palette.common.black,
 }));
-const CustomErrorMessage = styled(Box)(({theme})  =>({
-  marginTop: "6px",
-  marginRight: "20px",
-  textAlign: "right",
-  position:"relative",
-  color: theme.palette.secondary.dark
-}))
 const AddAdvertiser = () => {
   const dispatch = useDispatch();
   const { addAdvertiser } = useAddAdvertiser();
-  const [loader,setLoader] = useState(false);
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      website: "",
-      notes: "",
-    },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      setLoader(true)
-      try {
-        const result = await addAdvertiser(values);
-        if (result.status === 200) {
-          dispatch(
-            openSnackbar({
-              open: true,
-              message: result.msg,
-              variant: "alert",
-              alert: {
-                color: "success",
-              },
-              close: false,
-            })
-            );
-            setLoader(false)
-          formik.resetForm();
-        }
-      } catch (error) {
+  const [loader, setLoader] = useState(false);
+
+  const initialValues = {
+    name: "",
+    website: "",
+    notes: "",
+  };
+  const submitHandler = async (values, { resetForm }) => {
+    setLoader(true);
+    try {
+      const result = await addAdvertiser(values);
+      if (result.status === 200) {
         dispatch(
           openSnackbar({
             open: true,
-            message: error.msg,
-            variant: "alert", 
+            message: result.msg,
+            variant: "alert",
             alert: {
-              color: "error",
+              color: "success",
             },
             close: false,
           })
         );
-        setLoader(false)
+        setLoader(false);
+        resetForm();
       }
-    },
-  });
+    } catch (error) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: error.msg,
+          variant: "alert",
+          alert: {
+            color: "error",
+          },
+          close: false,
+        })
+      );
+      setLoader(false);
+    }
+  };
 
   const text = [
     {
@@ -162,67 +154,96 @@ const AddAdvertiser = () => {
 
   return (
     <Box sx={{ height: "100%" }}>
-      {loader && (<Loader />)}
+      {loader && <Loader />}
       <InnerHeader title={"Add Advertiser"} text={text} />
-      <form onSubmit={formik.handleSubmit}>
-        <Container maxWidth="lg" style={{ marginTop: "3rem" }}>
-          <MainHeading>Add Advertiser</MainHeading>
-          <Grid display={"flex"} gap={{ md: 4 }}>
-            <Grid xs={6}>
-              <Box display={"flex"} flexDirection={"column"} rowGap={3}>
-                <FormControl variant="standard">
-                  <InputLabel shrink htmlFor="name">
-                    Name*
-                  </InputLabel>
-                  <CustomStrapInput
-                    defaultValue=""
-                    placeholder="Please Enter Advertise Name"
-                    id="name"
-                    name="name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                  />
-                  <CustomErrorMessage >{formik.errors.name}</CustomErrorMessage>
-                </FormControl>
-                <FormControl variant="standard">
-                  <InputLabel shrink htmlFor="website">
-                    website*
-                  </InputLabel>
-                  <CustomStrapInput
-                    defaultValue=""
-                    placeholder="Please Enter website URL"
-                    id="website"
-                    name="website"
-                    value={formik.values.website}
-                    onChange={formik.handleChange}
-                  />
-                  <CustomErrorMessage >{formik.errors.website}</CustomErrorMessage>
-                </FormControl>
-              </Box>
-            </Grid>
-            <Grid xs={6}>
-              <Box>
-                <FormControl variant="standard">
-                  <InputLabel shrink htmlFor="website">
-                    Notes
-                  </InputLabel>
-                  <CustomStrapTextArea
-                    defaultValue=""
-                    placeholder="Note"
-                    multiline
-                    name="notes"
-                    rows={12}
-                    Fvalue={formik.values.notes}
-                    onChange={formik.handleChange}
-                  />
-                  <CustomErrorMessage >{formik.errors.notes}</CustomErrorMessage>
-                </FormControl>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-        <CustomStrapButton type="submit">Add Advertiser</CustomStrapButton>
-      </form>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={submitHandler}
+      >
+        {({
+          values,
+          touched,
+          errors,
+          handleChange,
+          handleSubmit,
+          setFieldValue,
+          enableReinitialize,
+        }) => {
+          return (
+            <Form onSubmit={handleSubmit}>
+              <Container maxWidth="lg" style={{ marginTop: "3rem" }}>
+                <MainHeading>Add Advertiser</MainHeading>
+                <Grid display={"flex"} gap={{ md: 4 }}>
+                  <Grid xs={6}>
+                    <Box display={"flex"} flexDirection={"column"} rowGap={3}>
+                      <FormControl variant="standard">
+                        <InputLabel shrink htmlFor="name">
+                          Name*
+                        </InputLabel>
+                        <CustomStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter Advertiser Name"
+                          id="name"
+                          name="name"
+                          value={values.name}
+                          error={touched?.name && errors?.name}
+                          helperText={touched?.name && errors?.name}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
+                      <FormControl variant="standard">
+                        <InputLabel shrink htmlFor="website">
+                          website*
+                        </InputLabel>
+                        <CustomStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter website URL"
+                          id="website"
+                          name="website"
+                          value={values.website}
+                          error={touched?.website && errors?.website}
+                          helperText={touched?.website && errors?.website}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                  <Grid xs={6}>
+                    <Box>
+                      <FormControl variant="standard">
+                        <InputLabel shrink htmlFor="website">
+                          Notes
+                        </InputLabel>
+                        <CustomStrapTextArea
+                          defaultValue=""
+                          placeholder="Note"
+                          multiline
+                          name="notes"
+                          rows={12}
+                          Fvalue={values.notes}
+                          onChange={handleChange}
+                        />
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Container>
+              <CustomStrapButton type="submit">
+                Add Advertiser
+              </CustomStrapButton>
+            </Form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 };

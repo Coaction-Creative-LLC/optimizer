@@ -9,11 +9,13 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { AddCircle, KeyboardArrowDown, Search } from "@mui/icons-material";
 import { actionsData, searchData, filtersData } from "./data";
+import { useNavigate } from "react-router-dom";
 
 const filter = createFilterOptions();
 
 const CampaignFilterOptions = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -175,6 +177,7 @@ const CampaignFilterOptions = () => {
       >
         <Typography variant="h5">Add Campaign</Typography>
         <AddCircle
+        onClick={() => { navigate('/campaign/add-campaign') }}
           style={{
             color: theme.palette.secondary.dark,
             cursor: "pointer",

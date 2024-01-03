@@ -42,7 +42,6 @@ const AudienceTable = () => {
   const {data: audience =[]} = data;
   console.log(audience, 'audience')
 
-  debugger;
   if (isLoading) {
     return (<Loader />);
   }

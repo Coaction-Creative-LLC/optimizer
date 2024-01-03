@@ -10,6 +10,8 @@ import useGetAdvertisers from "hooks/useGetetAdvertisers";
 import Loader from "ui-component/Loader";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "store/slices/snackbar";
+import { format,parse, parseISO } from 'date-fns';
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor:
@@ -97,7 +99,7 @@ dispatch(
                 <StyledTableCell align="left">{row.login || 'N/A'}</StyledTableCell>
                 <StyledTableCell align="left">{row.website}</StyledTableCell>
                 <StyledTableCell align="left">{row.tags || 'N/A'}</StyledTableCell>
-                <StyledTableCell align="left">{row.createdAt }</StyledTableCell>
+                <StyledTableCell align="left">{row.createdAt ? format(parseISO(row.createdAt), 'MM/d/yyyy') : 'N/A'}</StyledTableCell>
                 <StyledTableCell align="left">{row.note || 'N/A'}</StyledTableCell>
               </StyledTableRow>
             ))}

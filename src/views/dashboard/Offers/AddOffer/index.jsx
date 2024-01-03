@@ -3,18 +3,16 @@ import {
   Container,
   FormControl,
   InputLabel,
-  InputBase,
   Grid,
   ButtonBase,
-  Autocomplete,
-  createFilterOptions,
   TextField,
+  MenuItem,
 } from "@mui/material";
 import InnerHeader from "ui-component/InnerHeader";
 import { styled } from "@mui/material/styles";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
-import { useFormik } from "formik";
+import { Formik, Form } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
 import useCreateOffer from "hooks/useCreateOffer";
@@ -23,7 +21,6 @@ import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
 import useGetAdvertisers from "hooks/useGetetAdvertisers";
 import useGetAudience from "hooks/useGetAudience";
-const filter = createFilterOptions();
 
 const validationSchema = yup.object({
   name: yup.string().required("name is required"),
@@ -51,12 +48,13 @@ const SecondaryHeading = styled("h4")(({ theme }) => ({
   marginBottom: 14,
 }));
 
-const CustomStrapInput = styled(InputBase)(({ theme }) => ({
+const CustomStrapInput = styled(TextField)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(2),
   },
   "& .MuiInputBase-input": {
     borderRadius: 12,
+    padding: 6,
     backgroundColor:
       theme.palette.mode === "dark"
         ? theme.palette.common.black
@@ -64,6 +62,37 @@ const CustomStrapInput = styled(InputBase)(({ theme }) => ({
     height: "45px",
     flexShrink: 0,
     paddingLeft: 12,
+    [theme.breakpoints.down("md")]: {
+      width: "320px",
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "540px",
+    },
+  },
+}));
+const CustomStrapAutoComplete = styled(TextField)(({ theme }) => ({
+  "& .MuiInputBase-root": {
+    position: "relative",
+    borderRadius: 12,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? theme.palette.common.black
+        : theme.palette.secondary.light,
+    height: "58px",
+    flexShrink: 0,
+    "&:before": {
+      content: "none",
+    },
+    "&:after": {
+      content: "none",
+    },
+    "& .MuiSelect-icon": {
+      display: "none",
+    },
+  },
+  "& .MuiInputBase-input": {
+    paddingLeft: 12,
+    paddingRight: "39px",
     [theme.breakpoints.down("md")]: {
       width: "320px",
     },
@@ -92,13 +121,7 @@ const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
       ? theme.palette.common.white
       : theme.palette.common.black,
 }));
-const CustomErrorMessage = styled(Box)(({theme})  =>({
-  marginTop: "6px",
-  marginRight: "20px",
-  textAlign: "right",
-  position:"relative",
-  color: theme.palette.secondary.dark
-}))
+
 const AddOffer = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -118,277 +141,268 @@ const AddOffer = () => {
       url: "/add-offer",
     },
   ];
-
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      advertiser: "",
-      offerUrl: "",
-      audience: "",
-      tracking_method: "",
-    },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      setLoader(true);
-      try {
-        const result = await createOffer(values);
-        if (result.status === 200) {
-          dispatch(
-            openSnackbar({
-              open: true,
-              message: result.msg,
-              variant: "alert",
-              alert: {
-                color: "success",
-              },
-              close: false,
-            })
-          );
-          setLoader(false);
-          formik.resetForm();
-        }
-      } catch (error) {
+  const initialValues = {
+    name: "",
+    advertiser: "",
+    offerUrl: "",
+    audience: "",
+    tracking_method: "",
+  };
+  const submitHandler = async (values, { resetForm }) => {
+    setLoader(true);
+    try {
+      const result = await createOffer(values);
+      if (result.status === 200) {
         dispatch(
           openSnackbar({
             open: true,
-            message: error.msg,
+            message: result.msg,
             variant: "alert",
             alert: {
-              color: "error",
+              color: "success",
             },
             close: false,
           })
         );
         setLoader(false);
+        resetForm();
       }
-    },
-  });
+    } catch (error) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: error.msg,
+          variant: "alert",
+          alert: {
+            color: "error",
+          },
+          close: false,
+        })
+      );
+      setLoader(false);
+    }
+  };
 
   return (
     <Box sx={{ height: "100%" }}>
       {loader && <Loader />}
-      <form onSubmit={formik.handleSubmit}>
-        <InnerHeader title={"Add Offer"} text={text} />
-        <Container maxWidth="lg" style={{ marginTop: "3rem" }}>
-          <MainHeading>Add Offer</MainHeading>
-          <Grid display={"flex"} gap={{ md: 4 }}>
-            <Grid xs={6}>
-              <Box display={"flex"} flexDirection={"column"} rowGap={3}>
-                <FormControl variant="standard">
-                  <InputLabel
-                    shrink
-                    htmlFor="name"
-                    style={{ color: "#616161" }}
-                  >
-                    Name*
-                  </InputLabel>
-                  <CustomStrapInput
-                    defaultValue=""
-                    placeholder="Please Enter Advertise Name"
-                    id="name"
-                    name="name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                  />
-                  <CustomErrorMessage >{formik.errors.name}</CustomErrorMessage>
-                </FormControl>
-                <Box>
-                  <InputLabel
-                    shrink
-                    htmlFor="advertiser"
-                    sx={{
-                      color: "#616161",
-                    }}
-                  >
-                    Advertiser
-                  </InputLabel>
-                  <Autocomplete
-                    id="advertiser"
-                    forcePopupIcon
-                    popupIcon={<KeyboardArrowDown />}
-                    onChange={(event, newValue) => {
-                      formik.setFieldValue('advertiser', newValue._id)
-                    }}
-                    filterOptions={(options, params) => {
-                      const filtered = filter(options, params);
-                      const { inputValue } = params;
-                      const isExisting = options.some(
-                        (option) => inputValue === option
-                      );
-                      if (inputValue !== "" && !isExisting) {
-                        filtered.push(`Add "${inputValue}"`);
-                      }
-                      return filtered;
-                    }}
-                    options={advertisers.sort(
-                      (a, b) => -b.name.localeCompare(a.name)
-                    )}
-                    getOptionLabel={(option) => option.name}
-                    freeSolo
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.name}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={submitHandler}
+      >
+        {({
+          values,
+          touched,
+          errors,
+          handleChange,
+          handleSubmit,
+          setFieldValue,
+          enableReinitialize,
+        }) => {
+          return (
+            <Form onSubmit={handleSubmit}>
+              <InnerHeader title={"Add Offer"} text={text} />
+              <Container maxWidth="lg" style={{ marginTop: "3rem" }}>
+                <MainHeading>Add Offer</MainHeading>
+                <Grid display={"flex"} gap={{ md: 4 }}>
+                  <Grid xs={6}>
+                    <Box display={"flex"} flexDirection={"column"} rowGap={3}>
+                      <FormControl variant="standard">
+                        <InputLabel
+                          shrink
+                          htmlFor="name"
+                          style={{ color: "#616161" }}
+                        >
+                          Name*
+                        </InputLabel>
+                        <CustomStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter Name"
+                          id="name"
+                          name="name"
+                          value={values.name}
+                          error={touched?.name && errors?.name}
+                          helperText={touched?.name && errors?.name}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
+                      <Box>
+                        <InputLabel
+                          shrink
+                          htmlFor="advertiser"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Advertiser
+                        </InputLabel>
+                        <CustomStrapAutoComplete
+                          type={"text"}
+                          variant="standard"
+                          name="advertiser"
+                          select
+                          onChange={handleChange}
+                          error={
+                            touched?.advertiser && Boolean(errors?.advertiser)
+                          }
+                          helperText={touched?.advertiser && errors?.advertiser}
+                          value={values.advertiser}
+                          fullWidth
+                          SelectProps={{
+                            displayEmpty: true,
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                            "& input": {
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.common.black
+                                  : theme.palette.secondary.light,
+                              border: "none",
+                            },
+                          }}
+                          InputProps={{
+                            endAdornment: <KeyboardArrowDown />,
+                          }}
+                        >
+                          <MenuItem value={""} disabled>
+                            Please select an Advertiser
+                          </MenuItem>
+                          {advertisers?.map((item, index) => (
+                            <MenuItem
+                              value={item?._id}
+                              key={`${index}-categories-type-${item?._id}`}
+                            >
+                              {item?.name}
+                            </MenuItem>
+                          ))}
+                        </CustomStrapAutoComplete>
                       </Box>
-                    )}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "12px",
-                      },
-                      "& input": {
-                        bgcolor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.common.black
-                            : theme.palette.secondary.light,
-                      },
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        name="search"
-                        size="small"
-                        placeholder="Select Advertiser"
-                        InputProps={{
-                          ...params.InputProps,
-                          sx: {
-                            padding: 1,
-                            height: "58px",
-                            bgcolor:
-                              theme.palette.mode === "dark"
-                                ? theme.palette.common.black
-                                : theme.palette.secondary.light,
-                            "& fieldset": { border: "none" },
-                          },
-                        }}
-                      />
-                    )}
-                  />
-                  <CustomErrorMessage >{formik.errors.advertiser}</CustomErrorMessage>
-                </Box>
-                <FormControl variant="standard">
-                  <InputLabel
-                    shrink
-                    htmlFor="offerURL"
-                    sx={{
-                      color: "#616161",
-                    }}
-                  >
-                    Offer URL
-                  </InputLabel>
-                  <CustomStrapInput
-                    defaultValue=""
-                    placeholder="Please Enter Advertise Name"
-                    id="name"
-                    name="offerUrl"
-                    value={formik.values.offerUrl}
-                    onChange={formik.handleChange}
-                  />
-                  <CustomErrorMessage >{formik.errors.offerUrl}</CustomErrorMessage>
-                </FormControl>
-                <Box>
-                  <InputLabel
-                    shrink
-                    htmlFor="assignAudience"
-                    sx={{
-                      color: "#616161",
-                    }}
-                  >
-                    Assign Audience
-                  </InputLabel>
-                  <Autocomplete
-                    id="assignAudience"
-                    forcePopupIcon
-                    popupIcon={<KeyboardArrowDown />}
-                    onChange={(event, newValue) => {
-                      formik.setFieldValue('audience', newValue._id)
-
-                    }}
-                    filterOptions={(options, params) => {
-                      const filtered = filter(options, params);
-                      const { inputValue } = params;
-                      const isExisting = options.some(
-                        (option) => inputValue === option
-                      );
-                      if (inputValue !== "" && !isExisting) {
-                        filtered.push(`Add "${inputValue}"`);
-                      }
-                      return filtered;
-                    }}
-                    options={audience.sort(
-                      (a, b) => -b.audienceName.localeCompare(a.audienceName)
-                    )}
-                    getOptionLabel={(option) => option.audienceName}
-                    freeSolo
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.audienceName}
+                      <FormControl variant="standard">
+                        <InputLabel
+                          shrink
+                          htmlFor="offerURL"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Offer URL
+                        </InputLabel>
+                        <CustomStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter Offer URL"
+                          id="offerUrl"
+                          name="offerUrl"
+                          value={values.offerUrl}
+                          error={touched?.offerUrl && errors?.offerUrl}
+                          helperText={touched?.offerUrl && errors?.offerUrl}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
+                      <Box>
+                        <InputLabel
+                          shrink
+                          htmlFor="assignAudience"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Assign Audience
+                        </InputLabel>
+                        <CustomStrapAutoComplete
+                          type={"text"}
+                          variant="standard"
+                          name="audience"
+                          select
+                          onChange={handleChange}
+                          error={touched?.audience && Boolean(errors?.audience)}
+                          helperText={touched?.audience && errors?.audience}
+                          value={values.audience}
+                          fullWidth
+                          SelectProps={{
+                            displayEmpty: true,
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                            "& input": {
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.common.black
+                                  : theme.palette.secondary.light,
+                              border: "none",
+                            },
+                          }}
+                          InputProps={{
+                            endAdornment: <KeyboardArrowDown />,
+                          }}
+                        >
+                          <MenuItem value={""} disabled>
+                            Please select an Audience
+                          </MenuItem>
+                          {audience?.map((item, index) => (
+                            <MenuItem
+                              value={item?._id}
+                              key={`${index}-categories-type-${item?._id}`}
+                            >
+                              {item?.audienceName}
+                            </MenuItem>
+                          ))}
+                        </CustomStrapAutoComplete>
                       </Box>
-                    )}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "12px",
-                      },
-                      "& input": {
-                        bgcolor:
-                          theme.palette.mode === "dark"
-                            ? theme.palette.common.black
-                            : theme.palette.secondary.light,
-                      },
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        name="search"
-                        size="small"
-                        placeholder="Select Audience"
-                        InputProps={{
-                          ...params.InputProps,
-                          sx: {
-                            padding: 1,
-                            height: "58px",
-                            bgcolor:
-                              theme.palette.mode === "dark"
-                                ? theme.palette.common.black
-                                : theme.palette.secondary.light,
-                            "& fieldset": { border: "none" },
-                          },
-                        }}
-                      />
-                    )}
-                  />
-                  <CustomErrorMessage >{formik.errors.audience}</CustomErrorMessage>
-                </Box>
-              </Box>
-            </Grid>
-            <Grid xs={6}>
-              <Box>
-                <SecondaryHeading>Chose Conversion Tracking</SecondaryHeading>
-                <FormControl variant="standard">
-                  <InputLabel
-                    shrink
-                    htmlFor="s2sPostbackURL"
-                    sx={{
-                      color: "#616161",
-                    }}
-                  >
-                    Tracking Method*
-                  </InputLabel>
-
-                  <CustomStrapInput
-                    defaultValue=""
-                    placeholder="Tracking Method"
-                    id="tracking_method"
-                    name="tracking_method"
-                    value={formik.values.tracking_method}
-                    onChange={formik.handleChange}
-                  />
-                  <CustomErrorMessage >{formik.errors.tracking_method}</CustomErrorMessage>
-                </FormControl>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-        <CustomStrapButton type="submit">Add Offer</CustomStrapButton>
-      </form>
+                    </Box>
+                  </Grid>
+                  <Grid xs={6}>
+                    <Box>
+                      <SecondaryHeading>
+                        Chose Conversion Tracking
+                      </SecondaryHeading>
+                      <FormControl variant="standard">
+                        <InputLabel
+                          shrink
+                          htmlFor="s2sPostbackURL"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Tracking Method*
+                        </InputLabel>
+                        <CustomStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter Tracking Method"
+                          id="tracking_method"
+                          name="tracking_method"
+                          value={values.tracking_method}
+                          error={touched?.tracking_method && errors?.tracking_method}
+                          helperText={touched?.tracking_method && errors?.tracking_method}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Container>
+              <CustomStrapButton type="submit">Add Offer</CustomStrapButton>
+            </Form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 };

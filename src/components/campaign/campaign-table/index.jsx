@@ -41,7 +41,6 @@ const CampaignTable = () => {
     isLoading,
     error,
   } = useGetCampaigns();
-  debugger;
   if (isLoading) {
     return <Loader />;
   }

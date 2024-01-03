@@ -9,11 +9,13 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { AddCircle, KeyboardArrowDown, Search } from "@mui/icons-material";
 import { searchData, tagsData } from "./data";
+import { useNavigate } from "react-router-dom";
 
 const filter = createFilterOptions();
 
 const OffersFilterOptions = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -218,6 +220,7 @@ const OffersFilterOptions = () => {
       >
         <Typography variant="h5">Add Offer</Typography>
         <AddCircle
+        onClick={() => { navigate('/offers/add-offer') }}
           style={{
             color: theme.palette.secondary.dark,
             cursor: "pointer",

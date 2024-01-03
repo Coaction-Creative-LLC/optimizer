@@ -234,7 +234,7 @@ const FilterOptions = () => {
         gap={1}
       >
         <Typography variant="h5" color={"#616161"}>
-          Add Advertiserrrr
+          Add Advertiser
         </Typography>
         <AddCircle
         onClick={() => { navigate('/advertiser/add-advertiser') }}
