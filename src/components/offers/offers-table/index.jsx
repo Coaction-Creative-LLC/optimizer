@@ -10,6 +10,9 @@ import Loader from "ui-component/Loader";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "store/slices/snackbar";
 import useGetOffers from "hooks/useGetOffers";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "@emotion/react";
+import { Edit } from "@mui/icons-material";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -36,11 +39,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const OffersTable = () => {
   const dispatch = useDispatch();
-  const {
-    data: { data: offers = [] } = {},
-    isLoading,
-    error,
-  } = useGetOffers();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const editHandler = (row) => {
+    navigate("/offers/add-offer", {
+      state: {
+        offer: row,
+      },
+    });
+  };
+  const { data: { data: offers = [] } = {}, isLoading, error } = useGetOffers();
   if (isLoading) {
     return <Loader />;
   }
@@ -78,6 +86,7 @@ const OffersTable = () => {
               <StyledTableCell align="left">Prelander CTR</StyledTableCell>
               <StyledTableCell align="left">Clicks</StyledTableCell>
               <StyledTableCell align="left">CTR</StyledTableCell>
+              <StyledTableCell align="left">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -103,7 +112,9 @@ const OffersTable = () => {
                 <StyledTableCell align="left">
                   {row.uniqueVersion || "N/A"}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.conversion || "N/A"}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.conversion || "N/A"}
+                </StyledTableCell>
                 <StyledTableCell align="left">
                   {row.uniqueClicks || "N/A"}
                 </StyledTableCell>
@@ -113,8 +124,23 @@ const OffersTable = () => {
                 <StyledTableCell align="left">
                   {row.prelanderCTR || "N/A"}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.Clicks || "N/A"}</StyledTableCell>
-                <StyledTableCell align="left">{row.CTR || "N/A"}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.Clicks || "N/A"}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.CTR || "N/A"}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <Edit
+                    onClick={() => {
+                      editHandler(row);
+                    }}
+                    style={{
+                      color: theme.palette.secondary.dark,
+                      cursor: "pointer",
+                    }}
+                  />{" "}
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

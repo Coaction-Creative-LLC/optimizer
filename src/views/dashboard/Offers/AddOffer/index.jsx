@@ -16,11 +16,12 @@ import { Formik, Form } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
 import useCreateOffer from "hooks/useCreateOffer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
 import useGetAdvertisers from "hooks/useGetetAdvertisers";
 import useGetAudience from "hooks/useGetAudience";
+import { useLocation } from "react-router-dom";
 
 const validationSchema = yup.object({
   name: yup.string().required("name is required"),
@@ -124,12 +125,21 @@ const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
 
 const AddOffer = () => {
   const theme = useTheme();
+  const { state } = useLocation();
   const dispatch = useDispatch();
   const { data = {} } = useGetAdvertisers();
   const { advertisers = [] } = data;
   const { data: { data: audience = [] } = {} } = useGetAudience();
   const { createOffer } = useCreateOffer();
+  const initialValues = {
+    name: state?.offer?.name || "",
+    advertiser: state?.offer?.advertiser || "",
+    offerUrl: state?.offer?.offerUrl || "",
+    audience: state?.offer?.audience || "",
+    tracking_method: state?.offer?.tracking_method || "",
+  };
   const [loader, setLoader] = useState(false);
+  const [formValues, setFormValues] = useState(initialValues);
 
   const text = [
     {
@@ -141,12 +151,21 @@ const AddOffer = () => {
       url: "/add-offer",
     },
   ];
-  const initialValues = {
-    name: "",
-    advertiser: "",
-    offerUrl: "",
-    audience: "",
-    tracking_method: "",
+
+  useEffect(() => {
+    if (state && state.offer && state.offer._id) {
+      setFormInitialValues();
+    }
+  }, [state]);
+  const setFormInitialValues = () => {
+    setFormValues((prev) => ({
+      ...prev,
+      name: state?.offer?.name || "",
+      advertiser: state?.offer?.advertiser || "",
+      offerUrl: state?.offer?.offerUrl || "",
+      audience: state?.offer?.audience || "",
+      tracking_method: state?.offer?.tracking_method || "",
+    }));
   };
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
@@ -187,7 +206,7 @@ const AddOffer = () => {
     <Box sx={{ height: "100%" }}>
       {loader && <Loader />}
       <Formik
-        initialValues={initialValues}
+        initialValues={formValues}
         validationSchema={validationSchema}
         onSubmit={submitHandler}
       >
@@ -386,8 +405,12 @@ const AddOffer = () => {
                           id="tracking_method"
                           name="tracking_method"
                           value={values.tracking_method}
-                          error={touched?.tracking_method && errors?.tracking_method}
-                          helperText={touched?.tracking_method && errors?.tracking_method}
+                          error={
+                            touched?.tracking_method && errors?.tracking_method
+                          }
+                          helperText={
+                            touched?.tracking_method && errors?.tracking_method
+                          }
                           onChange={handleChange}
                           InputProps={{
                             disableUnderline: true,

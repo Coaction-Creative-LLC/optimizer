@@ -5,12 +5,15 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Checkbox } from "@mui/material";
+import { Button, Checkbox } from "@mui/material";
 import useGetAdvertisers from "hooks/useGetetAdvertisers";
 import Loader from "ui-component/Loader";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "store/slices/snackbar";
-import { format,parse, parseISO } from 'date-fns';
+import { format, parse, parseISO } from "date-fns";
+import { Edit } from "@mui/icons-material";
+import { useTheme } from "@emotion/react";
+import { useNavigate } from "react-router-dom";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -37,23 +40,34 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const AdvertiserTable = () => {
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const navigate = useNavigate();
+
+  const editHandler = (row) => {
+    debugger;
+    navigate('/advertiser/add-advertiser', {
+      state: {
+        advertiser: row,
+      },
+    });
+  };
   const { data, isLoading, error } = useGetAdvertisers();
   if (isLoading) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   if (error) {
-dispatch(
-  openSnackbar({
-    open: true,
-    message: error.msg,
-    variant: "alert", 
-    alert: {
-      color: "error",
-    },
-    close: false,
-  })
-)
+    dispatch(
+      openSnackbar({
+        open: true,
+        message: error.msg,
+        variant: "alert",
+        alert: {
+          color: "error",
+        },
+        close: false,
+      })
+    );
   }
 
   return (
@@ -74,6 +88,7 @@ dispatch(
               <StyledTableCell align="left">Tags</StyledTableCell>
               <StyledTableCell align="left">Created</StyledTableCell>
               <StyledTableCell align="left">Notes</StyledTableCell>
+              <StyledTableCell align="left">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -94,13 +109,35 @@ dispatch(
                   {row.name}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.accountManager || 'N/A'}
+                  {row.accountManager || "N/A"}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.login || 'N/A'}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.login || "N/A"}
+                </StyledTableCell>
                 <StyledTableCell align="left">{row.website}</StyledTableCell>
-                <StyledTableCell align="left">{row.tags || 'N/A'}</StyledTableCell>
-                <StyledTableCell align="left">{row.createdAt ? format(parseISO(row.createdAt), 'MM/d/yyyy') : 'N/A'}</StyledTableCell>
-                <StyledTableCell align="left">{row.note || 'N/A'}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.tags || "N/A"}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.createdAt
+                    ? format(parseISO(row.createdAt), "MM/d/yyyy")
+                    : "N/A"}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.note || "N/A"}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <Edit
+                    onClick={() => {
+                      editHandler(row);
+                    }}
+                    style={{
+                      color: theme.palette.secondary.dark,
+                      cursor: "pointer",
+                    }}
+                  />{" "}
+                </StyledTableCell>
+                {/* <StyledTableCell align="left">{row.note || 'N/A'}</StyledTableCell> */}
               </StyledTableRow>
             ))}
           </TableBody>

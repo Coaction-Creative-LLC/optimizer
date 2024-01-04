@@ -10,6 +10,9 @@ import { useDispatch } from "react-redux";
 import useGetCampaigns from "hooks/useGetCampaigns";
 import Loader from "ui-component/Loader";
 import { openSnackbar } from "store/slices/snackbar";
+import { useTheme } from "@emotion/react";
+import { useNavigate } from "react-router-dom";
+import { Edit } from "@mui/icons-material";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -36,11 +39,21 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const CampaignTable = () => {
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const navigate = useNavigate();
   const {
     data: { data: campaigns = [] } = {},
     isLoading,
     error,
   } = useGetCampaigns();
+
+  const editHandler = (row) => {
+    navigate("/campaign/add-campaign", {
+      state: {
+        campaign: row,
+      },
+    });
+  };
   if (isLoading) {
     return <Loader />;
   }
@@ -76,6 +89,7 @@ const CampaignTable = () => {
               <StyledTableCell align="left">Prelander Clicks</StyledTableCell>
               <StyledTableCell align="left">Prelander CTR</StyledTableCell>
               <StyledTableCell align="left">Clicks</StyledTableCell>
+              <StyledTableCell align="left">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -98,17 +112,32 @@ const CampaignTable = () => {
                 <StyledTableCell align="left">
                   {row.uniqueVersion || 0}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.conversion || 0}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.conversion || 0}
+                </StyledTableCell>
                 <StyledTableCell align="left">
                   {row.uniqueClicks || 0}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.prelanderClicks || '0%'}
+                  {row.prelanderClicks || "0%"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {row.prelanderCTR || "0%"}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.Clicks || 0}</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.Clicks || 0}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <Edit
+                    onClick={() => {
+                      editHandler(row);
+                    }}
+                    style={{
+                      color: theme.palette.secondary.dark,
+                      cursor: "pointer",
+                    }}
+                  />{" "}
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

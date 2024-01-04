@@ -16,7 +16,8 @@ import useAddAdvertiser from "hooks/useCreateAdvertiser";
 import { openSnackbar } from "store/slices/snackbar";
 import { useDispatch } from "react-redux";
 import Loader from "ui-component/Loader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const validationSchema = yup.object({
   name: yup.string().required("name is required"),
@@ -96,15 +97,31 @@ const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
       ? theme.palette.common.white
       : theme.palette.common.black,
 }));
+
 const AddAdvertiser = () => {
   const dispatch = useDispatch();
+  const { state } = useLocation();
+  const initialValues = {
+    name: state?.advertiser?.name || "",
+    website: state?.advertiser?.website || "",
+    notes: state?.advertiser?.notes || "",
+  };
+  const [formValues, setFormValues] = useState(initialValues);
   const { addAdvertiser } = useAddAdvertiser();
   const [loader, setLoader] = useState(false);
 
-  const initialValues = {
-    name: "",
-    website: "",
-    notes: "",
+  useEffect(() => {
+    if (state && state.advertiser && state.advertiser._id) {
+      setFormInitialValues();
+    }
+  }, [state]);
+  const setFormInitialValues = () => {
+    setFormValues((prev) => ({
+      ...prev,
+      name: state.advertiser.name || "",
+      website: state.advertiser.website || "",
+      notes: state.advertiser.notes || "",
+    }));
   };
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
@@ -157,7 +174,7 @@ const AddAdvertiser = () => {
       {loader && <Loader />}
       <InnerHeader title={"Add Advertiser"} text={text} />
       <Formik
-        initialValues={initialValues}
+        initialValues={formValues}
         validationSchema={validationSchema}
         onSubmit={submitHandler}
       >

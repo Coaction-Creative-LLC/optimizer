@@ -16,12 +16,13 @@ import COUNTRIES from "countryList";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useCreateCampaign from "hooks/useCreateCampaign";
 import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
 import useGetAudience from "hooks/useGetAudience";
 import useGetOffers from "hooks/useGetOffers";
+import { useLocation } from "react-router-dom";
 
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -140,6 +141,7 @@ const validationSchema = yup.object({
 
 const AddCampaign = () => {
   const theme = useTheme();
+  const { state } = useLocation();
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);
   const { data: { data: audience = [] } = {} } = useGetAudience();
@@ -155,13 +157,30 @@ const AddCampaign = () => {
       url: "/add-offer",
     },
   ];
-  const iniitialValues = {
-    name: "",
-    offer: "",
-    trafficSource: "",
-    country: "",
-    coastModel: "",
-    finalUrl: "",
+  const initialValues = {
+    name: state?.campaign?.name || "",
+    offer: state?.campaign?.offer || "",
+    trafficSource: state?.campaign?.trafficSource || "",
+    country: state?.campaign?.country || "",
+    coastModel: state?.campaign?.coastModel || "",
+    finalUrl: state?.campaign?.finalUrl || "",
+  };
+  const [formValues, setFormValues] = useState(initialValues);
+  useEffect(() => {
+    if (state && state.offer && state.offer._id) {
+      setFormInitialValues();
+    }
+  }, [state]);
+  const setFormInitialValues = () => {
+    setFormValues((prev) => ({
+      ...prev,
+      name: state?.campaign?.name || "",
+      offer: state?.campaign?.offer || "",
+      trafficSource: state?.campaign?.trafficSource || "",
+      country: state?.campaign?.country || "",
+      coastModel: state?.campaign?.coastModel || "",
+      finalUrl: state?.campaign?.finalUrl || "",
+    }));
   };
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
@@ -203,7 +222,7 @@ const AddCampaign = () => {
       {loader && <Loader />}
       <InnerHeader title={"Add Campaign"} text={text} />
       <Formik
-        initialValues={iniitialValues}
+        initialValues={formValues}
         validationSchema={validationSchema}
         onSubmit={submitHandler}
       >
@@ -355,6 +374,29 @@ const AddCampaign = () => {
                           ))}
                         </CustomStrapAutoComplete>
                       </Box>
+                      <FormControl variant="standard">
+                        <InputLabel
+                          shrink
+                          htmlFor="Optiimizer URL"
+                          style={{ color: "#616161" }}
+                        >
+                          Optiimizer URL*
+                        </InputLabel>
+                        <CustomStrapInput
+                          variant="standard"
+                          defaultValue=""
+                          placeholder="Please Enter URL"
+                          id="default_link"
+                          name="default_link"
+                          value={values.name}
+                          error={touched?.name && errors?.name}
+                          helperText={touched?.name && errors?.name}
+                          onChange={handleChange}
+                          InputProps={{
+                            disableUnderline: true,
+                          }}
+                        />
+                      </FormControl>
                     </Box>
                   </Grid>
                   <Grid xs={6}>
