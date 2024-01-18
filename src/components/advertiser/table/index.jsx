@@ -44,7 +44,6 @@ const AdvertiserTable = () => {
   const navigate = useNavigate();
 
   const editHandler = (row) => {
-    debugger;
     navigate('/advertiser/add-advertiser', {
       state: {
         advertiser: row,

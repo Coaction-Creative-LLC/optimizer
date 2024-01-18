@@ -52,6 +52,12 @@ const dashboard = {
           type: "item",
           url: "/advertiser/audience",
         },
+        {
+          id: "Groups",
+          title: <FormattedMessage id="Groups" />,
+          type: "item",
+          url: "/advertiser/groups",
+        },
       ],
     },
     {

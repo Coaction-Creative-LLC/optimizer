@@ -20,8 +20,8 @@ import { useEffect, useState } from "react";
 import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
 import useGetAdvertisers from "hooks/useGetetAdvertisers";
-import useGetAudience from "hooks/useGetAudience";
 import { useLocation } from "react-router-dom";
+import useGetAudienceGroups from "hooks/useGetAudienceGroups";
 
 const validationSchema = yup.object({
   name: yup.string().required("name is required"),
@@ -129,13 +129,15 @@ const AddOffer = () => {
   const dispatch = useDispatch();
   const { data = {} } = useGetAdvertisers();
   const { advertisers = [] } = data;
-  const { data: { data: audience = [] } = {} } = useGetAudience();
+  const { data: { groups: audience = [] } = {} } = useGetAudienceGroups();
+  debugger;
   const { createOffer } = useCreateOffer();
   const initialValues = {
+    _id: state?.offer?._id || "",
     name: state?.offer?.name || "",
-    advertiser: state?.offer?.advertiser || "",
+    advertiser: state?.offer?.advertiser?._id || "",
     offerUrl: state?.offer?.offerUrl || "",
-    audience: state?.offer?.audience || "",
+    audience: state?.offer?.audience?._id || "",
     tracking_method: state?.offer?.tracking_method || "",
   };
   const [loader, setLoader] = useState(false);
@@ -160,6 +162,7 @@ const AddOffer = () => {
   const setFormInitialValues = () => {
     setFormValues((prev) => ({
       ...prev,
+      _id: state?.offer?._id || "",
       name: state?.offer?.name || "",
       advertiser: state?.offer?.advertiser || "",
       offerUrl: state?.offer?.offerUrl || "",
@@ -376,7 +379,7 @@ const AddOffer = () => {
                               value={item?._id}
                               key={`${index}-categories-type-${item?._id}`}
                             >
-                              {item?.audienceName}
+                              { state?.offer?.audience?._id || item?.groupName }
                             </MenuItem>
                           ))}
                         </CustomStrapAutoComplete>

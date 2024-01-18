@@ -20,9 +20,9 @@ import { useEffect, useState } from "react";
 import useCreateCampaign from "hooks/useCreateCampaign";
 import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
-import useGetAudience from "hooks/useGetAudience";
 import useGetOffers from "hooks/useGetOffers";
 import { useLocation } from "react-router-dom";
+import useGetAudienceGroups from "hooks/useGetAudienceGroups";
 
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -88,27 +88,6 @@ const CustomStrapAutoComplete = styled(TextField)(({ theme }) => ({
   },
 }));
 
-const CustomGreyStrapInput = styled(TextField)(({ theme }) => ({
-  "label + &": {
-    marginTop: theme.spacing(2),
-  },
-  "& .MuiInputBase-input": {
-    borderRadius: 12,
-    backgroundColor:
-      theme.palette.mode === "dark" ? "#181F3A" : theme.palette.secondary.light,
-    height: "45px",
-    color: "#595959",
-    textDecoration: "underline",
-    flexShrink: 0,
-    paddingLeft: 12,
-    [theme.breakpoints.down("md")]: {
-      width: "320px",
-    },
-    [theme.breakpoints.up("md")]: {
-      width: "540px",
-    },
-  },
-}));
 
 const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
   borderRadius: 12,
@@ -136,7 +115,7 @@ const validationSchema = yup.object({
   trafficSource: yup.string().required("Traffic Source is Required"),
   country: yup.string().required("Country is Required"),
   coastModel: yup.string().required("Coast Model is Required "),
-  finalUrl: yup.string().required("Final URL is Required"),
+  url: yup.string().required("Final URL is Required"),
 });
 
 const AddCampaign = () => {
@@ -144,7 +123,7 @@ const AddCampaign = () => {
   const { state } = useLocation();
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);
-  const { data: { data: audience = [] } = {} } = useGetAudience();
+  const { data: { groups: audience = [] } = {} } = useGetAudienceGroups();
   const { data: { data: offers = [] } = {} } = useGetOffers();
   const { createCampaign } = useCreateCampaign();
   const text = [
@@ -158,12 +137,13 @@ const AddCampaign = () => {
     },
   ];
   const initialValues = {
+    _id: state?.campaign?._id || "",
     name: state?.campaign?.name || "",
-    offer: state?.campaign?.offer || "",
-    trafficSource: state?.campaign?.trafficSource || "",
+    offer: state?.campaign?.offer?._id || "",
+    trafficSource: state?.campaign?.trafficSource?._id || "",
     country: state?.campaign?.country || "",
     coastModel: state?.campaign?.coastModel || "",
-    finalUrl: state?.campaign?.finalUrl || "",
+    url: state?.campaign?.url || "",
   };
   const [formValues, setFormValues] = useState(initialValues);
   useEffect(() => {
@@ -174,12 +154,14 @@ const AddCampaign = () => {
   const setFormInitialValues = () => {
     setFormValues((prev) => ({
       ...prev,
+    _id: state?.campaign?._id || "",
       name: state?.campaign?.name || "",
-      offer: state?.campaign?.offer || "",
+      offer: state?.campaign?.offer._id || "",
       trafficSource: state?.campaign?.trafficSource || "",
       country: state?.campaign?.country || "",
       coastModel: state?.campaign?.coastModel || "",
-      finalUrl: state?.campaign?.finalUrl || "",
+    url: state?.campaign?.url || "",
+
     }));
   };
   const submitHandler = async (values, { resetForm }) => {
@@ -216,7 +198,6 @@ const AddCampaign = () => {
       setLoader(false);
     }
   };
-
   return (
     <Box sx={{ height: "100%" }}>
       {loader && <Loader />}
@@ -311,7 +292,7 @@ const AddCampaign = () => {
                               value={item?._id}
                               key={`${index}-categories-type-${item?._id}`}
                             >
-                              {item?.name}
+                              { item?.name}
                             </MenuItem>
                           ))}
                         </CustomStrapAutoComplete>
@@ -340,7 +321,7 @@ const AddCampaign = () => {
                           helperText={
                             touched?.trafficSource && errors?.trafficSource
                           }
-                          value={values.trafficSource}
+                          value={state?.campaign?.trafficSource || values.trafficSource}
                           fullWidth
                           SelectProps={{
                             displayEmpty: true,
@@ -369,34 +350,12 @@ const AddCampaign = () => {
                               value={item?._id}
                               key={`${index}-categories-type-${item?._id}`}
                             >
-                              {item?.audienceName}
+                              {item?.audienceName || item?.groupName}
                             </MenuItem>
                           ))}
                         </CustomStrapAutoComplete>
                       </Box>
-                      <FormControl variant="standard">
-                        <InputLabel
-                          shrink
-                          htmlFor="Optiimizer URL"
-                          style={{ color: "#616161" }}
-                        >
-                          Optiimizer URL*
-                        </InputLabel>
-                        <CustomStrapInput
-                          variant="standard"
-                          defaultValue=""
-                          placeholder="Please Enter URL"
-                          id="default_link"
-                          name="default_link"
-                          value={values.name}
-                          error={touched?.name && errors?.name}
-                          helperText={touched?.name && errors?.name}
-                          onChange={handleChange}
-                          InputProps={{
-                            disableUnderline: true,
-                          }}
-                        />
-                      </FormControl>
+                      
                     </Box>
                   </Grid>
                   <Grid xs={6}>
@@ -419,7 +378,7 @@ const AddCampaign = () => {
                           onChange={handleChange}
                           error={touched?.country && Boolean(errors?.country)}
                           helperText={touched?.country && errors?.country}
-                          value={values.country}
+                          value={ values.country}
                           fullWidth
                           SelectProps={{
                             displayEmpty: true,
@@ -482,23 +441,20 @@ const AddCampaign = () => {
                       <FormControl variant="standard">
                         <InputLabel
                           shrink
-                          htmlFor="s2sPostbackURL"
-                          sx={{
-                            color: "#616161",
-                          }}
+                          htmlFor="Optiimizer URL"
+                          style={{ color: "#616161" }}
                         >
-                          Final URL
+                          Optimizer URL*
                         </InputLabel>
-
-                        <CustomGreyStrapInput
+                        <CustomStrapInput
                           variant="standard"
                           defaultValue=""
-                          placeholder="Please Enter Campaign Name"
-                          id="finalUrl"
-                          name="finalUrl"
-                          error={touched?.finalUrl && errors?.finalUrl}
-                          helperText={touched?.finalUrl && errors?.finalUrl}
-                          value={values.finalUrl}
+                          placeholder="Please Enter URL"
+                          id="url"
+                          name="url"
+                          value={values.url}
+                          error={touched?.url && errors?.url}
+                          helperText={touched?.url && errors?.url}
                           onChange={handleChange}
                           InputProps={{
                             disableUnderline: true,

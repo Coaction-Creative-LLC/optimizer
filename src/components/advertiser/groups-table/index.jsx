@@ -6,12 +6,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Checkbox } from "@mui/material";
-import { useDispatch } from "react-redux";
-import useGetAudience from "hooks/useGetAudience";
+import useGetAudienceGroups from "hooks/useGetAudienceGroups";
 import Loader from "ui-component/Loader";
+import { useDispatch } from "react-redux";
 import { openSnackbar } from "store/slices/snackbar";
-import format from "date-fns/format";
-import { useState } from "react";
+
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor:
@@ -35,37 +35,27 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-
-
-const AudienceTable = ({setSelectedRows, selectedRows}) => {
+const GroupsTable = () => {
   const dispatch = useDispatch();
-  const { data = {}, isLoading, error } = useGetAudience();
-  const {data: audience =[]} = data;
-
-  const handleCheckboxChange = (id) => {
-    // Toggle the selection of the row
-    setSelectedRows((prevSelectedRows) =>
-      prevSelectedRows.includes(id)
-        ? prevSelectedRows.filter((rowId) => rowId !== id)
-        : [...prevSelectedRows, id]
-    );
-  };
+  
+  const { data, isLoading, error } = useGetAudienceGroups();
+  debugger;
   if (isLoading) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   if (error) {
-dispatch(
-  openSnackbar({
-    open: true,
-    message: error.msg,
-    variant: "alert", 
-    alert: {
-      color: "error",
-    },
-    close: false,
-  })
-)
+    dispatch(
+      openSnackbar({
+        open: true,
+        message: error.msg,
+        variant: "alert",
+        alert: {
+          color: "error",
+        },
+        close: false,
+      })
+    );
   }
   return (
     <div style={{ height: 400, width: "100%" }}>
@@ -78,36 +68,30 @@ dispatch(
         >
           <TableHead>
             <TableRow>
-              <StyledTableCell>Audience Name</StyledTableCell>
-              <StyledTableCell align="left">Status</StyledTableCell>
-              <StyledTableCell align="left">Date</StyledTableCell>
-              <StyledTableCell align="left">Time Zone</StyledTableCell>
-              <StyledTableCell align="left">Currency</StyledTableCell>
+              <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell>Audience Count</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {audience.map((row) => (
-              <StyledTableRow key={row.audienceName}>
+            {data?.groups.map((row) => (
+              <StyledTableRow key={row?._id}>
                 <StyledTableCell
                   component="th"
-                  id={row.name}
+                  id={row?._id}
                   scope="row"
                   padding="none"
                 >
                   <Checkbox
                     color="primary"
                     inputProps={{
-                      "aria-labelledby": row.name,
+                      "aria-labelledby": row?.groupName,
                     }}
-                    checked={selectedRows.includes(row._id)}
-                    onChange={() => handleCheckboxChange(row._id)}
                   />
-                  {row.audienceName || row?._id}
+                  {row?.groupName}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.status ? "Enabled" : "Disabled"}</StyledTableCell>
-                <StyledTableCell align="left">{ format(new Date(),'MM/d/yyyy' )}</StyledTableCell>
-                <StyledTableCell align="left">{row.timeZone === "" ? "US/Pacific" : "None"}</StyledTableCell>
-                <StyledTableCell align="left">{row.Currency }</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row?.users?.length || "N/A"}
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
@@ -117,4 +101,4 @@ dispatch(
   );
 };
 
-export default AudienceTable;
+export default GroupsTable;

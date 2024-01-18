@@ -1,7 +1,10 @@
 import { AudienceFilters, AudienceTable } from "components/advertiser";
+import { useState } from "react";
 import InnerHeader from "ui-component/InnerHeader";
 
 const Audience = () => {
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const text = [
     {
       value: "Advertiser",
@@ -12,11 +15,12 @@ const Audience = () => {
       url: "/audience",
     },
   ];
+
   return (
     <>
       <InnerHeader title={"Audience"} text={text} />
-      <AudienceFilters />
-      <AudienceTable />
+      <AudienceFilters selectedRows={selectedRows} setSelectedRows={setSelectedRows}  />
+      <AudienceTable setSelectedRows={setSelectedRows} selectedRows={selectedRows} />
     </>
   );
 };

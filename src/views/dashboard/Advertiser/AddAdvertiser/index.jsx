@@ -102,6 +102,7 @@ const AddAdvertiser = () => {
   const dispatch = useDispatch();
   const { state } = useLocation();
   const initialValues = {
+    _id: state?.advertiser?._id || "",
     name: state?.advertiser?.name || "",
     website: state?.advertiser?.website || "",
     notes: state?.advertiser?.notes || "",
@@ -118,6 +119,7 @@ const AddAdvertiser = () => {
   const setFormInitialValues = () => {
     setFormValues((prev) => ({
       ...prev,
+      _id: state.advertiser._id || "", 
       name: state.advertiser.name || "",
       website: state.advertiser.website || "",
       notes: state.advertiser.notes || "",

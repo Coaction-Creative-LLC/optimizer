@@ -265,6 +265,9 @@ const AddAdvertiserPage = Loadable(
 const AudiencePage = Loadable(
   lazy(() => import("views/dashboard/Advertiser/Audience"))
 );
+const GroupsPage = Loadable(
+  lazy(() => import("views/dashboard/Advertiser/Groups"))
+);
 const MainOffersPage = Loadable(lazy(() => import("views/dashboard/Offers")));
 const AddOfferPage = Loadable(
   lazy(() => import("views/dashboard/Offers/AddOffer"))
@@ -688,6 +691,10 @@ const MainRoutes = {
     {
       path: "/advertiser/audience",
       element: <AudiencePage />,
+    },
+    {
+      path: "/advertiser/groups",
+      element: <GroupsPage />,
     },
     {
       path: "/offers",

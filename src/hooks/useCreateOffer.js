@@ -3,7 +3,17 @@ import { useMutation } from 'react-query';
 import axios from 'axios';
 
 const create = async (data) => {
-  const response = await axios.post('https://developmentalsite-9a1468bb97a5.herokuapp.com/offers/create', data); // Replace with your API endpoint
+  let response;
+
+  if (data._id === "") {
+    delete(data._id)
+    // If data._id is present, perform a PUT request
+    response = await axios.post(`https://developmentalsite-9a1468bb97a5.herokuapp.com/offers/create`, data);
+  } else {
+    // If data._id is not present, perform a POST request
+    response = await axios.put(`https://developmentalsite-9a1468bb97a5.herokuapp.com/offers/${data._id}`, data);
+  }
+
   return response.data;
 };
 

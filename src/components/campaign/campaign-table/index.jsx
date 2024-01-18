@@ -5,14 +5,23 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Checkbox } from "@mui/material";
+import {
+  Checkbox,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Typography,
+} from "@mui/material";
 import { useDispatch } from "react-redux";
 import useGetCampaigns from "hooks/useGetCampaigns";
 import Loader from "ui-component/Loader";
 import { openSnackbar } from "store/slices/snackbar";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
-import { Edit } from "@mui/icons-material";
+import { Edit, InfoOutlined } from "@mui/icons-material";
+import { Stack } from "@mui/system";
+import { useState } from "react";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -41,6 +50,10 @@ const CampaignTable = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
+  const [opendialog, setOpenDialog] = useState(false);
+  const [campData, setCampData] = useState(null);
+
+
   const {
     data: { data: campaigns = [] } = {},
     isLoading,
@@ -71,6 +84,16 @@ const CampaignTable = () => {
       })
     );
   }
+  const handleOpen = (data) => {
+    setOpenDialog(true);
+    setCampData(data)
+  };
+
+  const handleClose = () => {
+    setOpenDialog(false);
+    setCampData(null)
+  };
+
   return (
     <div style={{ height: 400, width: "100%" }}>
       <TableContainer>
@@ -128,21 +151,68 @@ const CampaignTable = () => {
                   {row.Clicks || 0}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  <Edit
-                    onClick={() => {
-                      editHandler(row);
-                    }}
-                    style={{
-                      color: theme.palette.secondary.dark,
-                      cursor: "pointer",
-                    }}
-                  />{" "}
+                  <Stack direction={"row"} gap={1}>
+                    <Edit
+                      onClick={() => {
+                        editHandler(row);
+                      }}
+                      style={{
+                        color: theme.palette.secondary.dark,
+                        cursor: "pointer",
+                      }}
+                    />{" "}
+                    <InfoOutlined
+                      onClick={() => {
+                        // editHandler(row);
+                        handleOpen(row);
+                      }}
+                      style={{
+                        color: theme.palette.secondary.dark,
+                        cursor: "pointer",
+                      }}
+                    />{" "}
+                  </Stack>
                 </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog open={opendialog} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle textAlign={"center"}>Campaign Details</DialogTitle>
+        <DialogContent>
+          <Grid container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={6} xs={12} md={6}>
+              <Typography textAlign={"left"} fontWeight={700}>
+                Campaign Name:
+              </Typography>
+            </Grid>
+            <Grid item sm={6}>
+              <Typography>{campData?.name}</Typography>
+            </Grid>
+          </Grid>
+          <Grid container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={6} xs={12} md={6}>
+              <Typography textAlign={"left"} fontWeight={700}>
+              Original URL:
+              </Typography>
+            </Grid>
+            <Grid item sm={6}>
+              <Typography>{campData?.url}</Typography>
+            </Grid>
+          </Grid>
+          <Grid container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={6} xs={12} md={6}>
+              <Typography textAlign={"left"} fontWeight={700}>
+              Generated URL:
+              </Typography>
+            </Grid>
+            <Grid item sm={6}>
+              <Typography>{campData?.generatedURL}</Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
