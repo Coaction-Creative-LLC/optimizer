@@ -10,7 +10,7 @@ import useGetAdvertisers from "hooks/useGetetAdvertisers";
 import Loader from "ui-component/Loader";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "store/slices/snackbar";
-import { format, parse, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { Edit } from "@mui/icons-material";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";

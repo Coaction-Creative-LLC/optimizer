@@ -22,7 +22,8 @@ import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
 import useGetOffers from "hooks/useGetOffers";
 import { useLocation } from "react-router-dom";
-import useGetAudienceGroups from "hooks/useGetAudienceGroups";
+import useGetOfferDetails from "hooks/useGetOfferDetails";
+import useGetAudience from "hooks/useGetAudience";
 
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -56,6 +57,7 @@ const CustomStrapInput = styled(TextField)(({ theme }) => ({
     },
   },
 }));
+
 const CustomStrapAutoComplete = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root": {
     position: "relative",
@@ -87,7 +89,6 @@ const CustomStrapAutoComplete = styled(TextField)(({ theme }) => ({
     },
   },
 }));
-
 
 const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
   borderRadius: 12,
@@ -122,10 +123,10 @@ const AddCampaign = () => {
   const theme = useTheme();
   const { state } = useLocation();
   const dispatch = useDispatch();
-  const [loader, setLoader] = useState(false);
-  const { data: { groups: audience = [] } = {} } = useGetAudienceGroups();
   const { data: { data: offers = [] } = {} } = useGetOffers();
+  const { data: { data: audience = [] } = {} } = useGetAudience();
   const { createCampaign } = useCreateCampaign();
+
   const text = [
     {
       value: "Offers",
@@ -136,6 +137,7 @@ const AddCampaign = () => {
       url: "/add-offer",
     },
   ];
+
   const initialValues = {
     _id: state?.campaign?._id || "",
     name: state?.campaign?.name || "",
@@ -145,25 +147,36 @@ const AddCampaign = () => {
     coastModel: state?.campaign?.coastModel || "",
     url: state?.campaign?.url || "",
   };
+
+  const [loader, setLoader] = useState(false);
+  const [offerId, setOfferId] = useState("");
   const [formValues, setFormValues] = useState(initialValues);
-  useEffect(() => {
-    if (state && state.offer && state.offer._id) {
-      setFormInitialValues();
-    }
-  }, [state]);
+  const [url, setUrl] = useState("")
+  
+  const offerDetails = useGetOfferDetails(offerId);
+
   const setFormInitialValues = () => {
     setFormValues((prev) => ({
       ...prev,
-    _id: state?.campaign?._id || "",
+      _id: state?.campaign?._id || "",
       name: state?.campaign?.name || "",
       offer: state?.campaign?.offer._id || "",
       trafficSource: state?.campaign?.trafficSource || "",
       country: state?.campaign?.country || "",
       coastModel: state?.campaign?.coastModel || "",
-    url: state?.campaign?.url || "",
-
+      url: state?.campaign?.url || "",
     }));
   };
+
+  const valuesUrl = (values) => {
+    const {data: {genratedUrl = ""} = {}} = offerDetails;
+    if (genratedUrl ){
+      setUrl(genratedUrl)
+      values.url = url;
+}
+    return values.url;
+  }
+
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
     try {
@@ -182,6 +195,9 @@ const AddCampaign = () => {
         );
         setLoader(false);
         resetForm();
+        setOfferId('');
+        offerDetails.data = {};
+        setUrl('');
       }
     } catch (error) {
       dispatch(
@@ -198,6 +214,13 @@ const AddCampaign = () => {
       setLoader(false);
     }
   };
+
+  useEffect(() => {
+    if (state && state.offer && state.offer._id) {
+      setFormInitialValues();
+    }
+  }, [state]);
+
   return (
     <Box sx={{ height: "100%" }}>
       {loader && <Loader />}
@@ -206,6 +229,7 @@ const AddCampaign = () => {
         initialValues={formValues}
         validationSchema={validationSchema}
         onSubmit={submitHandler}
+        
       >
         {({
           values,
@@ -213,8 +237,6 @@ const AddCampaign = () => {
           errors,
           handleChange,
           handleSubmit,
-          setFieldValue,
-          enableReinitialize,
         }) => {
           return (
             <Form onSubmit={handleSubmit}>
@@ -260,7 +282,10 @@ const AddCampaign = () => {
                           variant="standard"
                           name="offer"
                           select
-                          onChange={handleChange}
+                          onChange={(event) => {
+                            handleChange(event);
+                            setOfferId(event.target.value)
+                          }}
                           error={touched?.offer && Boolean(errors?.offer)}
                           helperText={touched?.offer && errors?.offer}
                           value={values.offer}
@@ -292,7 +317,7 @@ const AddCampaign = () => {
                               value={item?._id}
                               key={`${index}-categories-type-${item?._id}`}
                             >
-                              { item?.name}
+                              {item?.name}
                             </MenuItem>
                           ))}
                         </CustomStrapAutoComplete>
@@ -321,7 +346,10 @@ const AddCampaign = () => {
                           helperText={
                             touched?.trafficSource && errors?.trafficSource
                           }
-                          value={state?.campaign?.trafficSource || values.trafficSource}
+                          value={
+                            state?.campaign?.trafficSource ||
+                            values.trafficSource
+                          }
                           fullWidth
                           SelectProps={{
                             displayEmpty: true,
@@ -355,7 +383,6 @@ const AddCampaign = () => {
                           ))}
                         </CustomStrapAutoComplete>
                       </Box>
-                      
                     </Box>
                   </Grid>
                   <Grid xs={6}>
@@ -378,7 +405,7 @@ const AddCampaign = () => {
                           onChange={handleChange}
                           error={touched?.country && Boolean(errors?.country)}
                           helperText={touched?.country && errors?.country}
-                          value={ values.country}
+                          value={values.country}
                           fullWidth
                           SelectProps={{
                             displayEmpty: true,
@@ -448,14 +475,11 @@ const AddCampaign = () => {
                         </InputLabel>
                         <CustomStrapInput
                           variant="standard"
-                          defaultValue=""
                           placeholder="Please Enter URL"
                           id="url"
                           name="url"
-                          value={values.url}
-                          error={touched?.url && errors?.url}
-                          helperText={touched?.url && errors?.url}
-                          onChange={handleChange}
+                          disabled
+                          value={valuesUrl(values)}
                           InputProps={{
                             disableUnderline: true,
                           }}

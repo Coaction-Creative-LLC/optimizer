@@ -105,6 +105,7 @@ const CampaignTable = () => {
         >
           <TableHead>
             <TableRow>
+            <StyledTableCell>Id</StyledTableCell>
               <StyledTableCell>Name</StyledTableCell>
               <StyledTableCell align="left">Unique Version</StyledTableCell>
               <StyledTableCell align="left">Conversion</StyledTableCell>
@@ -117,19 +118,22 @@ const CampaignTable = () => {
           </TableHead>
           <TableBody>
             {campaigns.map((row) => (
-              <StyledTableRow key={row.name}>
+              <StyledTableRow key={row._id}>
                 <StyledTableCell
                   component="th"
-                  id={row.name}
+                  id={row._id}
                   scope="row"
                   padding="none"
                 >
                   <Checkbox
                     color="primary"
                     inputProps={{
-                      "aria-labelledby": row.name,
+                      "aria-labelledby": row._id,
                     }}
                   />
+                  {row._id}
+                </StyledTableCell>
+                <StyledTableCell align="left">
                   {row.name}
                 </StyledTableCell>
                 <StyledTableCell align="left">

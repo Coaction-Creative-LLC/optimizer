@@ -9,6 +9,7 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
+  MenuItem,
   TextField,
   createFilterOptions,
 } from "@mui/material";
@@ -24,7 +25,8 @@ import { searchData, tagsData } from "./data";
 import { useState } from "react";
 import useCreateCampaignManually from "hooks/useCreateCampaignGroup";
 import { styled } from "@mui/material/styles";
-
+import TimeZones from "TimeZones";
+import useUpdateCampaignGroup from "hooks/useUpdateCampaignGroup";
 const CustomStrapInput = styled(TextField)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(2),
@@ -40,27 +42,73 @@ const CustomStrapInput = styled(TextField)(({ theme }) => ({
     flexShrink: 0,
     paddingLeft: 12,
     [theme.breakpoints.down("md")]: {
-      width: "220px",
+      width: "320px",
     },
     [theme.breakpoints.up("md")]: {
-      width: "340px",
+      width: "532px",
     },
   },
 }));
+const CustomStrapAutoComplete = styled(TextField)(({ theme }) => ({
+  "& .MuiInputBase-root": {
+    position: "relative",
+    borderRadius: 12,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? theme.palette.common.black
+        : theme.palette.secondary.light,
+    height: "58px",
+    flexShrink: 0,
+    "&:before": {
+      content: "none",
+    },
+    "&:after": {
+      content: "none",
+    },
+    "& .MuiSelect-icon": {
+      display: "none",
+    },
+  },
+  "& .MuiInputBase-input": {
+    paddingLeft: 12,
+    paddingRight: "39px",
+    [theme.breakpoints.down("md")]: {
+      width: "320px",
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "500px",
+    },
+  },
+}));
+
 const filter = createFilterOptions();
 
 const validationSchema = yup.object({
-  groupName: yup.string().required("group name is required"),
+  groupName: yup.string().required("Group name is required"),
+  timeZone: yup.string().required("Time zone is required"),
 });
-const AudienceFilters = ({ selectedRows , setSelectedRows}) => {
+const AudienceFilters = ({
+  selectedRows,
+  setSelectedRows,
+  setOpenDialog,
+  opendialog,
+  audienceData,
+}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { createCampaignGroup } = useCreateCampaignManually();
+  const { updateCampaignGroup} = useUpdateCampaignGroup();
 
-  const [opendialog, setOpenDialog] = useState(false);
-  const initialValues = {
-    groupName: "",
-  };
+ const initialValues = audienceData
+    ? {
+        groupName: audienceData.groupName || "",
+        timeZone: audienceData.timeZone || "",
+      }
+    : {
+        groupName: "",
+        timeZone: "",
+      };
+
   const [formValues, setFormValues] = useState(initialValues);
   const [loader, setLoader] = useState(false);
 
@@ -75,23 +123,52 @@ const AudienceFilters = ({ selectedRows , setSelectedRows}) => {
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
     try {
-      const result = await createCampaignGroup({ groupName: values.groupName, userIds: selectedRows} );
-      if (result.status === 200) {
-        dispatch(
-          openSnackbar({
-            open: true,
-            message: result.msg,
-            variant: "alert",
-            alert: {
-              color: "success",
-            },
-            close: false,
-          })
-        );
-        setLoader(false);
-        setSelectedRows([]);
-        setOpenDialog(false);
-        resetForm();
+      if (audienceData?._id) {
+        // If audienceData._id exists, call useUpdateCampaignGroup
+        const result = await updateCampaignGroup({
+          // Pass the necessary parameters for updating
+          _id: audienceData._id,
+          groupName: values.groupName,
+          timeZone: values.timeZone,
+        });
+        if (result.status === 200) {
+          dispatch(
+            openSnackbar({
+              open: true,
+              message: result.msg,
+              variant: "alert",
+              alert: {
+                color: "success",
+              },
+              close: false,
+            })
+          );
+          setLoader(false);
+          setOpenDialog(false);
+          resetForm();
+        }
+      } else {
+        // If audienceData._id doesn't exist, call useCreateCampaignGroup
+        const result = await createCampaignGroup({
+          groupName: values.groupName,
+          timeZone: values.timeZone,
+        });
+        if (result.status === 200) {
+              dispatch(
+                openSnackbar({
+                  open: true,
+                  message: result.msg,
+                  variant: "alert",
+                  alert: {
+                    color: "success",
+                  },
+                  close: false,
+                })
+              );
+              setLoader(false);
+              setOpenDialog(false);
+              resetForm();
+            }
       }
     } catch (error) {
       dispatch(
@@ -329,13 +406,13 @@ const AudienceFilters = ({ selectedRows , setSelectedRows}) => {
           size="small"
           onClick={handleOpen}
         >
-          Create Group
+          Create Audience
         </Button>
       </Box>
       <Dialog open={opendialog} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle textAlign={"center"}>Campaign Details</DialogTitle>
+        <DialogTitle textAlign={"center"}>Create Audience</DialogTitle>
         <Formik
-          initialValues={formValues}
+          initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={submitHandler}
         >
@@ -351,7 +428,7 @@ const AudienceFilters = ({ selectedRows , setSelectedRows}) => {
             return (
               <Form onSubmit={handleSubmit}>
                 <DialogContent>
-                  <Box display={"flex"} justifyContent={"center"}>
+                  <Box display={"flex"} justifyContent={"center"} gap={3}>
                     <FormControl variant="standard">
                       <InputLabel
                         shrink
@@ -375,6 +452,56 @@ const AudienceFilters = ({ selectedRows , setSelectedRows}) => {
                         }}
                       />
                     </FormControl>
+                  </Box>
+                  <Box marginTop={1}>
+                    <InputLabel
+                      shrink
+                      htmlFor="state"
+                      style={{ color: "#616161" }}
+                    >
+                      Time Zone
+                    </InputLabel>
+                    <CustomStrapAutoComplete
+                      type={"text"}
+                      variant="standard"
+                      name="timeZone"
+                      select
+                      onChange={handleChange}
+                      error={touched?.timeZone && Boolean(errors?.timeZone)}
+                      helperText={touched?.timeZone && errors?.timeZone}
+                      value={values.timeZone}
+                      fullWidth
+                      SelectProps={{
+                        displayEmpty: true,
+                      }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "12px",
+                        },
+                        "& input": {
+                          bgcolor:
+                            theme.palette.mode === "dark"
+                              ? theme.palette.common.black
+                              : theme.palette.secondary.light,
+                          border: "none",
+                        },
+                      }}
+                      InputProps={{
+                        endAdornment: <KeyboardArrowDown />,
+                      }}
+                    >
+                      <MenuItem value={""} disabled>
+                        Please select a Time Zone
+                      </MenuItem>
+                      {TimeZones?.map((item, index) => (
+                        <MenuItem
+                          value={item?.abbreviation}
+                          key={`${index}-categories-type-${item?.abbreviation}`}
+                        >
+                          {item?.zone}
+                        </MenuItem>
+                      ))}
+                    </CustomStrapAutoComplete>
                   </Box>
                 </DialogContent>
                 <DialogActions>

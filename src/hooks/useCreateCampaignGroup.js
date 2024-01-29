@@ -3,7 +3,7 @@ import { useMutation } from 'react-query';
 import axios from 'axios';
 
 const createGroup = async (data) => {
-  const response = await axios.post(`https://developmentalsite-9a1468bb97a5.herokuapp.com/campaigns/create/group`, data);
+  const response = await axios.post(`https://developmentalsite-9a1468bb97a5.herokuapp.com/audiences/`, data);
   return response.data;
 };
 

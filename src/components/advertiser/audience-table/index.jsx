@@ -11,7 +11,10 @@ import useGetAudience from "hooks/useGetAudience";
 import Loader from "ui-component/Loader";
 import { openSnackbar } from "store/slices/snackbar";
 import format from "date-fns/format";
-import { useState } from "react";
+import { Edit } from "@mui/icons-material";
+import { useTheme } from "@emotion/react";
+import { parseISO } from "date-fns";
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor:
@@ -36,11 +39,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-
-const AudienceTable = ({setSelectedRows, selectedRows}) => {
+const AudienceTable = ({
+  setSelectedRows,
+  selectedRows,
+  setOpenDialog,
+  opendialog,
+  setAudienceData,
+}) => {
   const dispatch = useDispatch();
+  const theme = useTheme();
   const { data = {}, isLoading, error } = useGetAudience();
-  const {data: audience =[]} = data;
+  const { data: audience = [] } = data;
 
   const handleCheckboxChange = (id) => {
     // Toggle the selection of the row
@@ -50,22 +59,26 @@ const AudienceTable = ({setSelectedRows, selectedRows}) => {
         : [...prevSelectedRows, id]
     );
   };
+  const handleOpenDialog = (row) => {
+    setOpenDialog(true);
+    setAudienceData(row);
+  };
   if (isLoading) {
-    return (<Loader />);
+    return <Loader />;
   }
 
   if (error) {
-dispatch(
-  openSnackbar({
-    open: true,
-    message: error.msg,
-    variant: "alert", 
-    alert: {
-      color: "error",
-    },
-    close: false,
-  })
-)
+    dispatch(
+      openSnackbar({
+        open: true,
+        message: error.msg,
+        variant: "alert",
+        alert: {
+          color: "error",
+        },
+        close: false,
+      })
+    );
   }
   return (
     <div style={{ height: 400, width: "100%" }}>
@@ -83,31 +96,51 @@ dispatch(
               <StyledTableCell align="left">Date</StyledTableCell>
               <StyledTableCell align="left">Time Zone</StyledTableCell>
               <StyledTableCell align="left">Currency</StyledTableCell>
+              <StyledTableCell align="left">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {audience.map((row) => (
-              <StyledTableRow key={row.audienceName}>
+            {audience?.map((row) => (
+              <StyledTableRow key={row?._id}>
                 <StyledTableCell
                   component="th"
-                  id={row.name}
+                  id={row?._id}
                   scope="row"
                   padding="none"
                 >
                   <Checkbox
                     color="primary"
                     inputProps={{
-                      "aria-labelledby": row.name,
+                      "aria-labelledby": row?._id,
                     }}
-                    checked={selectedRows.includes(row._id)}
-                    onChange={() => handleCheckboxChange(row._id)}
+                    checked={selectedRows.includes(row?._id)}
+                    onChange={() => handleCheckboxChange(row?._id)}
                   />
-                  {row.audienceName || row?._id}
+                  {row?.groupName}
                 </StyledTableCell>
-                <StyledTableCell align="left">{row.status ? "Enabled" : "Disabled"}</StyledTableCell>
-                <StyledTableCell align="left">{ format(new Date(),'MM/d/yyyy' )}</StyledTableCell>
-                <StyledTableCell align="left">{row.timeZone === "" ? "US/Pacific" : "None"}</StyledTableCell>
-                <StyledTableCell align="left">{row.Currency }</StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.status || "N/A"}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.createdAt
+                    ? format(parseISO(row.createdAt), "MM/d/yyyy")
+                    : "N/A"}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row?.timeZone}
+                </StyledTableCell>
+                <StyledTableCell align="left">{row.currency}</StyledTableCell>
+                <StyledTableCell align="left">
+                  <Edit
+                    onClick={() => {
+                      handleOpenDialog(row);
+                    }}
+                    style={{
+                      color: theme.palette.secondary.dark,
+                      cursor: "pointer",
+                    }}
+                  />{" "}
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
