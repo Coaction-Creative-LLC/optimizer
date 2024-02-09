@@ -1,4 +1,5 @@
 import { OffersTrafficSource } from "components/traffic-source";
+import TrafficSourceTable from "components/traffic-source/table";
 import InnerHeader from "ui-component/InnerHeader";
 
 const TrafficSource = () => {
@@ -12,6 +13,7 @@ const TrafficSource = () => {
     <>
       <InnerHeader title={"Traffic Source"} text={text} />
       <OffersTrafficSource />
+      <TrafficSourceTable />
     </>
   );
 };

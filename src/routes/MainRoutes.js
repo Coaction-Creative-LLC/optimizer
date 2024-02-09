@@ -279,6 +279,9 @@ const ControlSettingsPage = Loadable(
 const TrafficSourcePage = Loadable(
   lazy(() => import("views/dashboard/TrafficSource"))
 );
+const CreateTrafficSource = Loadable(
+  lazy(() => import("views/dashboard/TrafficSource/CreateTrafficSouce"))
+);
 const OptimizerPage = Loadable(lazy(() => import("views/dashboard/Optimizer")));
 
 // pricing page routing
@@ -714,12 +717,12 @@ const MainRoutes = {
       element: <TrafficSourcePage />,
     },
     {
-      path: "/dashboard",
-      element: <DashboardPage />,
+      path: "/traffic-source/add-source",
+      element: <CreateTrafficSource />,
     },
     {
-      path: "/optimizer",
-      element: <OptimizerPage />,
+      path: "/dashboard",
+      element: <DashboardPage />,
     },
     {
       path: "/dashboard/analytics",

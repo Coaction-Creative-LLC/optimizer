@@ -7,6 +7,8 @@ import {
   ButtonBase,
   TextField,
   MenuItem,
+  InputBase,
+  Button,
 } from "@mui/material";
 import InnerHeader from "ui-component/InnerHeader";
 import { styled } from "@mui/material/styles";
@@ -29,6 +31,9 @@ const validationSchema = yup.object({
   offerUrl: yup.string().required("URL is Required"),
   audience: yup.string().required("Audience is Required"),
   tracking_method: yup.string(),
+  iframeScript: yup.string(),
+  javascriptCode: yup.string(),
+  postbackUrl: yup.string(),
 });
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -48,7 +53,27 @@ const SecondaryHeading = styled("h4")(({ theme }) => ({
   lineHeight: "30px",
   marginBottom: 14,
 }));
-
+const CustomStrapTextArea = styled(InputBase)(({ theme }) => ({
+  "label + &": {
+    marginTop: theme.spacing(2),
+  },
+  "& .MuiInputBase-input": {
+    borderRadius: 12,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? theme.palette.common.black
+        : theme.palette.secondary.light,
+    height: "236px",
+    flexShrink: 0,
+    padding: "12px 0 0 12px",
+    [theme.breakpoints.down("md")]: {
+      width: "330px",
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "520px",
+    },
+  },
+}));
 const CustomStrapInput = styled(TextField)(({ theme }) => ({
   "label + &": {
     marginTop: theme.spacing(2),
@@ -129,7 +154,7 @@ const AddOffer = () => {
   const dispatch = useDispatch();
   const { data = {} } = useGetAdvertisers();
   const { advertisers = [] } = data;
-  const { data: { data : audience = [] } = {} } = useGetAudience();
+  const { data: { data: audience = [] } = {} } = useGetAudience();
   const { createOffer } = useCreateOffer();
   const initialValues = {
     _id: state?.offer?._id || "",
@@ -167,6 +192,9 @@ const AddOffer = () => {
       offerUrl: state?.offer?.offerUrl || "",
       audience: state?.offer?.audience || "",
       tracking_method: state?.offer?.tracking_method || "",
+      // iframeScript: state?.offer?.iframeScript || "",
+      // javascriptCode: state?.offer?.javascriptCode || "",
+      // postbackUrl: state?.offer?.postbackUrl || "",
     }));
   };
   const submitHandler = async (values, { resetForm }) => {
@@ -221,6 +249,10 @@ const AddOffer = () => {
           setFieldValue,
           enableReinitialize,
         }) => {
+          const handleTrackingMethodChange = (event) => {
+            const selectedTrackingMethod = event.target.value;
+            setFieldValue("tracking_method", selectedTrackingMethod);
+          };
           return (
             <Form onSubmit={handleSubmit}>
               <InnerHeader title={"Add Offer"} text={text} />
@@ -378,7 +410,9 @@ const AddOffer = () => {
                               value={item?._id}
                               key={`${index}-categories-type-${item?._id}`}
                             >
-                              { state?.offer?.audience?.name }
+                              {state
+                                ? state?.offer?.audience?.name
+                                : item.groupName}
                             </MenuItem>
                           ))}
                         </CustomStrapAutoComplete>
@@ -390,7 +424,7 @@ const AddOffer = () => {
                       <SecondaryHeading>
                         Chose Conversion Tracking
                       </SecondaryHeading>
-                      <FormControl variant="standard">
+                      {/* <FormControl variant="standard">
                         <InputLabel
                           shrink
                           htmlFor="s2sPostbackURL"
@@ -418,7 +452,165 @@ const AddOffer = () => {
                             disableUnderline: true,
                           }}
                         />
+                      </FormControl> */}
+                      <FormControl variant="standard">
+                        <InputLabel
+                          shrink
+                          htmlFor="tracking_method"
+                          sx={{
+                            color: "#616161",
+                          }}
+                        >
+                          Tracking Method*
+                        </InputLabel>
+                        <CustomStrapAutoComplete
+                          type={"text"}
+                          variant="standard"
+                          name="tracking_method"
+                          select
+                          onChange={handleTrackingMethodChange}
+                          error={
+                            touched?.tracking_method && errors?.tracking_method
+                          }
+                          helperText={
+                            touched?.tracking_method && errors?.tracking_method
+                          }
+                          value={values.tracking_method}
+                          fullWidth
+                          SelectProps={{
+                            displayEmpty: true,
+                          }}
+                          sx={{
+                            marginTop: 2,
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                            "& input": {
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.common.black
+                                  : theme.palette.secondary.light,
+                              border: "none",
+                            },
+                          }}
+                          InputProps={{
+                            endAdornment: <KeyboardArrowDown />,
+                          }}
+                        >
+                          <MenuItem value={""} disabled>
+                            Please select a Tracking Method
+                          </MenuItem>
+                          <MenuItem value={"iframe"}>IFrame</MenuItem>
+                          <MenuItem value={"javascript"}>Javascript</MenuItem>
+                          <MenuItem value={"image"}>Image</MenuItem>
+                          <MenuItem value={"postback"}>Postback</MenuItem>
+                        </CustomStrapAutoComplete>
                       </FormControl>
+                      {/* {values.tracking_method === "iframe" && (
+                        <FormControl variant="standard" sx={{ marginTop: 3 }}>
+                          <InputLabel
+                            shrink
+                            htmlFor="iframeScript"
+                            sx={{
+                              color: "#616161",
+                            }}
+                          >
+                            IFrame Script
+                          </InputLabel>
+                          <CustomStrapTextArea
+                            defaultValue=""
+                            placeholder="Enter IFrame Script"
+                            multiline
+                            id="iframeScript"
+                            name="iframeScript"
+                            value={values.iframeScript}
+                            rows={7}
+                            onChange={handleChange}
+                          />
+                        </FormControl>
+                      )}
+                      {values.tracking_method === "javascript" && (
+                        <FormControl variant="standard" sx={{ marginTop: 3 }}>
+                          <InputLabel
+                            shrink
+                            htmlFor="javascriptCode"
+                            sx={{
+                              color: "#616161",
+                            }}
+                          >
+                            Javascript Code
+                          </InputLabel>
+                          <CustomStrapTextArea
+                            defaultValue=""
+                            placeholder="Enter IFrame Script"
+                            multiline
+                            id="javascriptCode"
+                            name="javascriptCode"
+                            value={values.javascriptCode}
+                            onChange={handleChange}
+                            rows={7}
+                          />
+                        </FormControl>
+                      )}
+                      {values.tracking_method === "image" && (
+                        <FormControl variant="standard" sx={{ marginTop: 6 }}>
+                          <InputLabel
+                            shrink
+                            htmlFor="image"
+                            sx={{
+                              color: "#616161",
+                            }}
+                          >
+                            Image Upload
+                          </InputLabel>
+                          <ButtonBase
+                            sx={{
+                              borderRadius: 3,
+                              backgroundColor:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.secondary.dark
+                                  : theme.palette.secondary.light,
+                              height: "42px",
+                              width: "140.967px",
+                              fontWeight: 700,
+                              fontSize: 16,
+                              marginTop:3,
+                              color:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.common.white
+                                  : theme.palette.common.black,
+                            }}
+                            type="button"
+                          >
+                            Upload Image
+                          </ButtonBase>
+                        </FormControl>
+                      )}
+                      {values.tracking_method === "postback" && (
+                        <FormControl variant="standard" sx={{ marginTop: 3 }}>
+                          <InputLabel
+                            shrink
+                            htmlFor="postbackUrl"
+                            sx={{
+                              color: "#616161",
+                            }}
+                          >
+                            Postback URL
+                          </InputLabel>
+                          <CustomStrapInput
+                            variant="standard"
+                            defaultValue=""
+                            placeholder="Enter Postback URL"
+                            id="postbackUrl"
+                            name="postbackUrl"
+                            value={values.postbackUrl}
+                            onChange={handleChange}
+                            InputProps={{
+                              disableUnderline: true,
+                            }}
+                          />
+                        </FormControl>
+                      )} */}
                     </Box>
                   </Grid>
                 </Grid>

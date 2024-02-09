@@ -1,18 +1,22 @@
 import {
   Autocomplete,
   Box,
+  Button,
   InputAdornment,
   TextField,
+  Typography,
   createFilterOptions,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { KeyboardArrowDown, Search } from "@mui/icons-material";
+import { AddCircle, KeyboardArrowDown, Search } from "@mui/icons-material";
 import { actionsData, searchData, filtersData } from "./data";
+import { useNavigate } from "react-router-dom";
 
 const filter = createFilterOptions();
 
 const OffersTrafficSource = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -164,6 +168,25 @@ const OffersTrafficSource = () => {
               style={{ height: "40px" }}
             />
           )}
+        />
+      </Box>
+      <Box
+        display={"flex"}
+        alignItems={"center"}
+        justifyContent={"flex-start"}
+        gap={1}
+      >
+        <Typography variant="h5" color={"#616161"}>
+          Create Traffic Source
+        </Typography>
+        <AddCircle
+          onClick={() => {
+            navigate("/traffic-source/add-source");
+          }}
+          style={{
+            color: theme.palette.secondary.dark,
+            cursor: "pointer",
+          }}
         />
       </Box>
     </Box>

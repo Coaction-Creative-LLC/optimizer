@@ -95,18 +95,17 @@ const dashboard = {
     {
       id: "Traffic Source",
       title: <FormattedMessage id="traffic-source" />,
-      type: "item",
+      type: "collapse",
       url: "/traffic-source",
       icon: IconArrowsTransferDown,
-      breadcrumbs: false,
-    },
-    {
-      id: "Optimizer",
-      title: <FormattedMessage id="optimizer" />,
-      type: "item",
-      url: "/optimizer",
-      icon: icons.IconDeviceAnalytics,
-      breadcrumbs: false,
+      children: [
+        {
+          id: "Add Offers",
+          title: <FormattedMessage id="Create Traffic Source" />,
+          type: "item",
+          url: "/traffic-source/add-source",
+        },
+      ],
     },
   ],
 };

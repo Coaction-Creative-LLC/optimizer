@@ -151,8 +151,8 @@ const AddCampaign = () => {
   const [loader, setLoader] = useState(false);
   const [offerId, setOfferId] = useState("");
   const [formValues, setFormValues] = useState(initialValues);
-  const [url, setUrl] = useState("")
-  
+  const [url, setUrl] = useState("");
+
   const offerDetails = useGetOfferDetails(offerId);
 
   const setFormInitialValues = () => {
@@ -169,13 +169,19 @@ const AddCampaign = () => {
   };
 
   const valuesUrl = (values) => {
-    const {data: {genratedUrl = ""} = {}} = offerDetails;
-    if (genratedUrl ){
-      setUrl(genratedUrl)
+    const { data: { genratedUrl = "" } = {} } = offerDetails;
+    if (genratedUrl) {
+      setUrl(genratedUrl);
       values.url = url;
-}
+    }
     return values.url;
-  }
+  };
+
+  // const handleResetStates = () => {
+  //   setOfferId("");
+  //   offerDetails.data = {};
+  //   setUrl("");
+  // };
 
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
@@ -195,9 +201,9 @@ const AddCampaign = () => {
         );
         setLoader(false);
         resetForm();
-        setOfferId('');
+        setOfferId("");
         offerDetails.data = {};
-        setUrl('');
+        setUrl("");
       }
     } catch (error) {
       dispatch(
@@ -229,15 +235,8 @@ const AddCampaign = () => {
         initialValues={formValues}
         validationSchema={validationSchema}
         onSubmit={submitHandler}
-        
       >
-        {({
-          values,
-          touched,
-          errors,
-          handleChange,
-          handleSubmit,
-        }) => {
+        {({ values, touched, errors, handleChange, handleSubmit }) => {
           return (
             <Form onSubmit={handleSubmit}>
               <Container maxWidth="lg" style={{ marginTop: "3rem" }}>
@@ -284,7 +283,7 @@ const AddCampaign = () => {
                           select
                           onChange={(event) => {
                             handleChange(event);
-                            setOfferId(event.target.value)
+                            setOfferId(event.target.value);
                           }}
                           error={touched?.offer && Boolean(errors?.offer)}
                           helperText={touched?.offer && errors?.offer}
