@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
 import useGetAdvertisers from "hooks/useGetetAdvertisers";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useGetAudience from "hooks/useGetAudience";
 
 const validationSchema = yup.object({
@@ -30,7 +30,7 @@ const validationSchema = yup.object({
   advertiser: yup.string().required("Advertisor is required"),
   offerUrl: yup.string().required("URL is Required"),
   audience: yup.string().required("Audience is Required"),
-  tracking_method: yup.string(),
+  conversionTracking: yup.string(),
   iframeScript: yup.string(),
   javascriptCode: yup.string(),
   postbackUrl: yup.string(),
@@ -151,6 +151,8 @@ const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
 const AddOffer = () => {
   const theme = useTheme();
   const { state } = useLocation();
+  const navigate = useNavigate();
+  debugger;
   const dispatch = useDispatch();
   const { data = {} } = useGetAdvertisers();
   const { advertisers = [] } = data;
@@ -162,7 +164,7 @@ const AddOffer = () => {
     advertiser: state?.offer?.advertiser?._id || "",
     offerUrl: state?.offer?.offerUrl || "",
     audience: state?.offer?.audience?._id || "",
-    tracking_method: state?.offer?.tracking_method || "",
+    conversionTracking: state?.offer?.conversionTracking || "",
   };
   const [loader, setLoader] = useState(false);
   const [formValues, setFormValues] = useState(initialValues);
@@ -191,7 +193,7 @@ const AddOffer = () => {
       advertiser: state?.offer?.advertiser || "",
       offerUrl: state?.offer?.offerUrl || "",
       audience: state?.offer?.audience || "",
-      tracking_method: state?.offer?.tracking_method || "",
+      conversionTracking: state?.offer?.conversionTracking || "",
       // iframeScript: state?.offer?.iframeScript || "",
       // javascriptCode: state?.offer?.javascriptCode || "",
       // postbackUrl: state?.offer?.postbackUrl || "",
@@ -215,6 +217,7 @@ const AddOffer = () => {
         );
         setLoader(false);
         resetForm();
+        navigate(-1)
       }
     } catch (error) {
       dispatch(
@@ -251,7 +254,7 @@ const AddOffer = () => {
         }) => {
           const handleTrackingMethodChange = (event) => {
             const selectedTrackingMethod = event.target.value;
-            setFieldValue("tracking_method", selectedTrackingMethod);
+            setFieldValue("conversionTracking", selectedTrackingMethod);
           };
           return (
             <Form onSubmit={handleSubmit}>
@@ -410,7 +413,7 @@ const AddOffer = () => {
                               value={item?._id}
                               key={`${index}-categories-type-${item?._id}`}
                             >
-                              {state
+                              {state?.offer?.audience?.name
                                 ? state?.offer?.audience?.name
                                 : item.groupName}
                             </MenuItem>
@@ -438,14 +441,14 @@ const AddOffer = () => {
                           variant="standard"
                           defaultValue=""
                           placeholder="Please Enter Tracking Method"
-                          id="tracking_method"
-                          name="tracking_method"
-                          value={values.tracking_method}
+                          id="conversionTracking"
+                          name="conversionTracking"
+                          value={values.conversionTracking}
                           error={
-                            touched?.tracking_method && errors?.tracking_method
+                            touched?.conversionTracking && errors?.conversionTracking
                           }
                           helperText={
-                            touched?.tracking_method && errors?.tracking_method
+                            touched?.conversionTracking && errors?.conversionTracking
                           }
                           onChange={handleChange}
                           InputProps={{
@@ -456,7 +459,7 @@ const AddOffer = () => {
                       <FormControl variant="standard">
                         <InputLabel
                           shrink
-                          htmlFor="tracking_method"
+                          htmlFor="conversionTracking"
                           sx={{
                             color: "#616161",
                           }}
@@ -466,16 +469,16 @@ const AddOffer = () => {
                         <CustomStrapAutoComplete
                           type={"text"}
                           variant="standard"
-                          name="tracking_method"
+                          name="conversionTracking"
                           select
                           onChange={handleTrackingMethodChange}
                           error={
-                            touched?.tracking_method && errors?.tracking_method
+                            touched?.conversionTracking && errors?.conversionTracking
                           }
                           helperText={
-                            touched?.tracking_method && errors?.tracking_method
+                            touched?.conversionTracking && errors?.conversionTracking
                           }
-                          value={values.tracking_method}
+                          value={values.conversionTracking}
                           fullWidth
                           SelectProps={{
                             displayEmpty: true,
@@ -506,7 +509,7 @@ const AddOffer = () => {
                           <MenuItem value={"postback"}>Postback</MenuItem>
                         </CustomStrapAutoComplete>
                       </FormControl>
-                      {/* {values.tracking_method === "iframe" && (
+                      {/* {values.conversionTracking === "iframe" && (
                         <FormControl variant="standard" sx={{ marginTop: 3 }}>
                           <InputLabel
                             shrink
@@ -529,7 +532,7 @@ const AddOffer = () => {
                           />
                         </FormControl>
                       )}
-                      {values.tracking_method === "javascript" && (
+                      {values.conversionTracking === "javascript" && (
                         <FormControl variant="standard" sx={{ marginTop: 3 }}>
                           <InputLabel
                             shrink
@@ -552,7 +555,7 @@ const AddOffer = () => {
                           />
                         </FormControl>
                       )}
-                      {values.tracking_method === "image" && (
+                      {values.conversionTracking === "image" && (
                         <FormControl variant="standard" sx={{ marginTop: 6 }}>
                           <InputLabel
                             shrink
@@ -586,7 +589,7 @@ const AddOffer = () => {
                           </ButtonBase>
                         </FormControl>
                       )}
-                      {values.tracking_method === "postback" && (
+                      {values.conversionTracking === "postback" && (
                         <FormControl variant="standard" sx={{ marginTop: 3 }}>
                           <InputLabel
                             shrink

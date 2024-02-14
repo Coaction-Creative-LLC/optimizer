@@ -6,29 +6,21 @@ import {
   Grid,
   ButtonBase,
   TextField,
-  MenuItem,
-  InputBase,
-  Button,
 } from "@mui/material";
 import InnerHeader from "ui-component/InnerHeader";
 import { styled } from "@mui/material/styles";
-import { useTheme } from "@mui/material/styles";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import Loader from "ui-component/Loader";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { openSnackbar } from "store/slices/snackbar";
+import useCreateTrafficSource from "hooks/useCreateTrafficSource";
 
 const validationSchema = yup.object({
   name: yup.string().required("name is required"),
-  advertiser: yup.string().required("Advertisor is required"),
-  offerUrl: yup.string().required("URL is Required"),
-  audience: yup.string().required("Audience is Required"),
-  tracking_method: yup.string(),
-  iframeScript: yup.string(),
-  javascriptCode: yup.string(),
-  postbackUrl: yup.string(),
+  description: yup.string().required("description is required"),
 });
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -83,13 +75,14 @@ const CustomStrapButton = styled(ButtonBase)(({ theme }) => ({
 }));
 
 const CreateTrafficSource = () => {
-  const theme = useTheme();
+  const navigate = useNavigate();
   const { state } = useLocation();
   const dispatch = useDispatch();
-
+  const { createTrafficSource } = useCreateTrafficSource();
   const initialValues = {
-    name: "",
-    description: "",
+    _id:state?.source?._id || "",
+    name: state?.source?.name || "",
+    description: state?.source?.description || "",
   };
   const [loader, setLoader] = useState(false);
   const [formValues, setFormValues] = useState(initialValues);
@@ -113,18 +106,53 @@ const CreateTrafficSource = () => {
   const setFormInitialValues = () => {
     setFormValues((prev) => ({
       ...prev,
-      name: "",
-      description: "",
+    _id:state?.source?._id || "",
+    name: state?.source?.name || "",
+    description: state?.source?.description || "",
     }));
   };
-
+  const submitHandler = async (values, { resetForm }) => {
+    setLoader(true);
+    try {
+      const result = await createTrafficSource(values);
+      if (result.status === 200) {
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: result.msg,
+            variant: "alert",
+            alert: {
+              color: "success",
+            },
+            close: false,
+          })
+        );
+        setLoader(false);
+        resetForm();
+        navigate(-1)
+      }
+    } catch (error) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: error.msg,
+          variant: "alert",
+          alert: {
+            color: "error",
+          },
+          close: false,
+        })
+      );
+      setLoader(false);
+    }
+  };
   return (
     <Box sx={{ height: "100%" }}>
       {loader && <Loader />}
       <Formik
         initialValues={formValues}
         validationSchema={validationSchema}
-        onSubmit={() => {}}
+        onSubmit={submitHandler}
       >
         {({
           values,

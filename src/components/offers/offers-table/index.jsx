@@ -113,7 +113,7 @@ const OffersTable = () => {
                   {row.uniqueVersion || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.conversion || "N/A"}
+                  {row.conversionTracking === "" ? "N/A" : row.conversionTracking}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {row.uniqueClicks || "N/A"}

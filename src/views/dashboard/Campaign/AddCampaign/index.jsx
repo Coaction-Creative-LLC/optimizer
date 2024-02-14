@@ -23,7 +23,7 @@ import Loader from "ui-component/Loader";
 import useGetOffers from "hooks/useGetOffers";
 import { useLocation } from "react-router-dom";
 import useGetOfferDetails from "hooks/useGetOfferDetails";
-import useGetAudience from "hooks/useGetAudience";
+import useGetTrafficSource from "hooks/useGetTrafficSources";
 
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -124,7 +124,7 @@ const AddCampaign = () => {
   const { state } = useLocation();
   const dispatch = useDispatch();
   const { data: { data: offers = [] } = {} } = useGetOffers();
-  const { data: { data: audience = [] } = {} } = useGetAudience();
+  const { data: { data: trafficSource = [] } = {},} =useGetTrafficSource();
   const { createCampaign } = useCreateCampaign();
 
   const text = [
@@ -177,11 +177,6 @@ const AddCampaign = () => {
     return values.url;
   };
 
-  // const handleResetStates = () => {
-  //   setOfferId("");
-  //   offerDetails.data = {};
-  //   setUrl("");
-  // };
 
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
@@ -370,14 +365,14 @@ const AddCampaign = () => {
                           }}
                         >
                           <MenuItem value={""} disabled>
-                            Please select an Audience
+                            Please select Traffic Source
                           </MenuItem>
-                          {audience?.map((item, index) => (
+                          {trafficSource?.map((item, index) => (
                             <MenuItem
                               value={item?._id}
                               key={`${index}-categories-type-${item?._id}`}
                             >
-                              {item?.audienceName || item?.groupName}
+                              {item?.name || item?.groupName}
                             </MenuItem>
                           ))}
                         </CustomStrapAutoComplete>

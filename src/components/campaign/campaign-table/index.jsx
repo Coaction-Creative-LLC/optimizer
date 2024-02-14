@@ -53,7 +53,6 @@ const CampaignTable = () => {
   const [opendialog, setOpenDialog] = useState(false);
   const [campData, setCampData] = useState(null);
 
-
   const {
     data: { data: campaigns = [] } = {},
     isLoading,

@@ -5,8 +5,7 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Button, Checkbox } from "@mui/material";
-import useGetAdvertisers from "hooks/useGetetAdvertisers";
+import { Checkbox } from "@mui/material";
 import Loader from "ui-component/Loader";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "store/slices/snackbar";
@@ -14,6 +13,7 @@ import { format, parseISO } from "date-fns";
 import { Edit } from "@mui/icons-material";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
+import useGetTrafficSource from "hooks/useGetTrafficSources";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -42,6 +42,8 @@ const TrafficSourceTable = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
+  const { data: { data: trafficSource = [] } = {},
+  isLoading,error,} =useGetTrafficSource();
 
   const editHandler = (row) => {
     navigate("/traffic-source/add-source", {
@@ -50,44 +52,7 @@ const TrafficSourceTable = () => {
       },
     });
   };
-  const { data, isLoading, error } = useGetAdvertisers();
-  const dataa = [
-    {
-      name: "Facebook",
-      description: "Lorem ipsum Lorem ipsum Lorem ipsum",
-      createdAt: "09/02/2024",
-    },
-    {
-      name: "Facebook",
-      description: "Lorem ipsum Lorem ipsum Lorem ipsum",
-      createdAt: "09/02/2024",
-    },
-    {
-      name: "Facebook",
-      description: "Lorem ipsum Lorem ipsum Lorem ipsum",
-      createdAt: "09/02/2024",
-    },
-    {
-      name: "Facebook",
-      description: "Lorem ipsum Lorem ipsum Lorem ipsum",
-      createdAt: "09/02/2024",
-    },
-    {
-      name: "Facebook",
-      description: "Lorem ipsum Lorem ipsum Lorem ipsum",
-      createdAt: "09/02/2024",
-    },
-    {
-      name: "Facebook",
-      description: "Lorem ipsum Lorem ipsum Lorem ipsum",
-      createdAt: "09/02/2024",
-    },
-    {
-      name: "Facebook",
-      description: "Lorem ipsum Lorem ipsum Lorem ipsum",
-      createdAt: "09/02/2024",
-    },
-  ];
+  
   if (isLoading) {
     return <Loader />;
   }
@@ -124,7 +89,7 @@ const TrafficSourceTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {dataa.map((row) => (
+            {trafficSource.map((row) => (
               <StyledTableRow key={row.name}>
                 <StyledTableCell
                   component="th"
@@ -144,7 +109,9 @@ const TrafficSourceTable = () => {
                   {row.description || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.createdAt || "N/A"}
+                {row.createdAt
+                    ? format(parseISO(row.createdAt), "MM/d/yyyy")
+                    : "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   <Edit
