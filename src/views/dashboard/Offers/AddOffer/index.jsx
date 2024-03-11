@@ -7,8 +7,6 @@ import {
   ButtonBase,
   TextField,
   MenuItem,
-  InputBase,
-  Button,
 } from "@mui/material";
 import InnerHeader from "ui-component/InnerHeader";
 import { styled } from "@mui/material/styles";
@@ -53,27 +51,6 @@ const SecondaryHeading = styled("h4")(({ theme }) => ({
   fontWeight: 700,
   lineHeight: "30px",
   marginBottom: 14,
-}));
-const CustomStrapTextArea = styled(InputBase)(({ theme }) => ({
-  "label + &": {
-    marginTop: theme.spacing(2),
-  },
-  "& .MuiInputBase-input": {
-    borderRadius: 12,
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? theme.palette.common.black
-        : theme.palette.secondary.light,
-    height: "236px",
-    flexShrink: 0,
-    padding: "12px 0 0 12px",
-    [theme.breakpoints.down("md")]: {
-      width: "330px",
-    },
-    [theme.breakpoints.up("md")]: {
-      width: "520px",
-    },
-  },
 }));
 const CustomStrapInput = styled(TextField)(({ theme }) => ({
   "label + &": {

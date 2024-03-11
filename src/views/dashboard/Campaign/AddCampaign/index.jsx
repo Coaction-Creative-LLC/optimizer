@@ -122,7 +122,6 @@ const validationSchema = yup.object({
 const AddCampaign = () => {
   const theme = useTheme();
   const { state } = useLocation();
-  debugger;
   const dispatch = useDispatch();
   const { data: { data: offers = [] } = {} } = useGetOffers();
   const { data: { data: trafficSource = [] } = {},} =useGetTrafficSource();
@@ -155,8 +154,7 @@ const AddCampaign = () => {
   const [url, setUrl] = useState("");
 
   const offerDetails = useGetOfferDetails(offerId);
-  debugger;
-
+  
   const setFormInitialValues = () => {
     setFormValues((prev) => ({
       ...prev,
