@@ -24,6 +24,7 @@ import Loader from "ui-component/Loader";
 import useGetAdvertisers from "hooks/useGetetAdvertisers";
 import { useLocation, useNavigate } from "react-router-dom";
 import useGetAudience from "hooks/useGetAudience";
+import useGetConversions from "hooks/useGetAllConversion";
 
 const validationSchema = yup.object({
   name: yup.string().required("name is required"),
@@ -152,8 +153,9 @@ const AddOffer = () => {
   const theme = useTheme();
   const { state } = useLocation();
   const navigate = useNavigate();
-  debugger;
   const dispatch = useDispatch();
+  const {data: {conTrackingList = []} ={}} = useGetConversions();
+  debugger;
   const { data = {} } = useGetAdvertisers();
   const { advertisers = [] } = data;
   const { data: { data: audience = [] } = {} } = useGetAudience();
@@ -194,9 +196,6 @@ const AddOffer = () => {
       offerUrl: state?.offer?.offerUrl || "",
       audience: state?.offer?.audience || "",
       conversionTracking: state?.offer?.conversionTracking || "",
-      // iframeScript: state?.offer?.iframeScript || "",
-      // javascriptCode: state?.offer?.javascriptCode || "",
-      // postbackUrl: state?.offer?.postbackUrl || "",
     }));
   };
   const submitHandler = async (values, { resetForm }) => {
@@ -427,35 +426,6 @@ const AddOffer = () => {
                       <SecondaryHeading>
                         Chose Conversion Tracking
                       </SecondaryHeading>
-                      {/* <FormControl variant="standard">
-                        <InputLabel
-                          shrink
-                          htmlFor="s2sPostbackURL"
-                          sx={{
-                            color: "#616161",
-                          }}
-                        >
-                          Tracking Method*
-                        </InputLabel>
-                        <CustomStrapInput
-                          variant="standard"
-                          defaultValue=""
-                          placeholder="Please Enter Tracking Method"
-                          id="conversionTracking"
-                          name="conversionTracking"
-                          value={values.conversionTracking}
-                          error={
-                            touched?.conversionTracking && errors?.conversionTracking
-                          }
-                          helperText={
-                            touched?.conversionTracking && errors?.conversionTracking
-                          }
-                          onChange={handleChange}
-                          InputProps={{
-                            disableUnderline: true,
-                          }}
-                        />
-                      </FormControl> */}
                       <FormControl variant="standard">
                         <InputLabel
                           shrink
@@ -503,117 +473,18 @@ const AddOffer = () => {
                           <MenuItem value={""} disabled>
                             Please select a Tracking Method
                           </MenuItem>
-                          <MenuItem value={"iframe"}>IFrame</MenuItem>
-                          <MenuItem value={"javascript"}>Javascript</MenuItem>
-                          <MenuItem value={"image"}>Image</MenuItem>
-                          <MenuItem value={"postback"}>Postback</MenuItem>
+                          {conTrackingList?.map((item, index) => (
+                            <MenuItem
+                              value={item?._id}
+                              key={`${index}-categories-type-${item?._id}`}
+                            >
+                              {state?.offer?.audience?.name
+                                ? state?.offer?.audience?.name
+                                : item.trackingName}
+                            </MenuItem>
+                          ))}
                         </CustomStrapAutoComplete>
                       </FormControl>
-                      {/* {values.conversionTracking === "iframe" && (
-                        <FormControl variant="standard" sx={{ marginTop: 3 }}>
-                          <InputLabel
-                            shrink
-                            htmlFor="iframeScript"
-                            sx={{
-                              color: "#616161",
-                            }}
-                          >
-                            IFrame Script
-                          </InputLabel>
-                          <CustomStrapTextArea
-                            defaultValue=""
-                            placeholder="Enter IFrame Script"
-                            multiline
-                            id="iframeScript"
-                            name="iframeScript"
-                            value={values.iframeScript}
-                            rows={7}
-                            onChange={handleChange}
-                          />
-                        </FormControl>
-                      )}
-                      {values.conversionTracking === "javascript" && (
-                        <FormControl variant="standard" sx={{ marginTop: 3 }}>
-                          <InputLabel
-                            shrink
-                            htmlFor="javascriptCode"
-                            sx={{
-                              color: "#616161",
-                            }}
-                          >
-                            Javascript Code
-                          </InputLabel>
-                          <CustomStrapTextArea
-                            defaultValue=""
-                            placeholder="Enter IFrame Script"
-                            multiline
-                            id="javascriptCode"
-                            name="javascriptCode"
-                            value={values.javascriptCode}
-                            onChange={handleChange}
-                            rows={7}
-                          />
-                        </FormControl>
-                      )}
-                      {values.conversionTracking === "image" && (
-                        <FormControl variant="standard" sx={{ marginTop: 6 }}>
-                          <InputLabel
-                            shrink
-                            htmlFor="image"
-                            sx={{
-                              color: "#616161",
-                            }}
-                          >
-                            Image Upload
-                          </InputLabel>
-                          <ButtonBase
-                            sx={{
-                              borderRadius: 3,
-                              backgroundColor:
-                                theme.palette.mode === "dark"
-                                  ? theme.palette.secondary.dark
-                                  : theme.palette.secondary.light,
-                              height: "42px",
-                              width: "140.967px",
-                              fontWeight: 700,
-                              fontSize: 16,
-                              marginTop:3,
-                              color:
-                                theme.palette.mode === "dark"
-                                  ? theme.palette.common.white
-                                  : theme.palette.common.black,
-                            }}
-                            type="button"
-                          >
-                            Upload Image
-                          </ButtonBase>
-                        </FormControl>
-                      )}
-                      {values.conversionTracking === "postback" && (
-                        <FormControl variant="standard" sx={{ marginTop: 3 }}>
-                          <InputLabel
-                            shrink
-                            htmlFor="postbackUrl"
-                            sx={{
-                              color: "#616161",
-                            }}
-                          >
-                            Postback URL
-                          </InputLabel>
-                          <CustomStrapInput
-                            variant="standard"
-                            defaultValue=""
-                            placeholder="Enter Postback URL"
-                            id="postbackUrl"
-                            name="postbackUrl"
-                            value={values.postbackUrl}
-                            onChange={handleChange}
-                            InputProps={{
-                              disableUnderline: true,
-                            }}
-                          />
-                        </FormControl>
-                      )} */}
                     </Box>
                   </Grid>
                 </Grid>

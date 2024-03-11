@@ -122,6 +122,7 @@ const validationSchema = yup.object({
 const AddCampaign = () => {
   const theme = useTheme();
   const { state } = useLocation();
+  debugger;
   const dispatch = useDispatch();
   const { data: { data: offers = [] } = {} } = useGetOffers();
   const { data: { data: trafficSource = [] } = {},} =useGetTrafficSource();
@@ -154,6 +155,7 @@ const AddCampaign = () => {
   const [url, setUrl] = useState("");
 
   const offerDetails = useGetOfferDetails(offerId);
+  debugger;
 
   const setFormInitialValues = () => {
     setFormValues((prev) => ({
@@ -176,7 +178,6 @@ const AddCampaign = () => {
     }
     return values.url;
   };
-
 
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
@@ -341,7 +342,7 @@ const AddCampaign = () => {
                             touched?.trafficSource && errors?.trafficSource
                           }
                           value={
-                            state?.campaign?.trafficSource ||
+                            state?.campaign?.trafficSource._id ||
                             values.trafficSource
                           }
                           fullWidth
@@ -436,28 +437,54 @@ const AddCampaign = () => {
                       <FormControl variant="standard">
                         <InputLabel
                           shrink
-                          htmlFor="s2sPostbackURL"
+                          htmlFor="coastModel"
                           sx={{
                             color: "#616161",
                           }}
                         >
                           Coast Model
                         </InputLabel>
-
-                        <CustomStrapInput
+                        <CustomStrapAutoComplete
+                          type={"text"}
                           variant="standard"
-                          defaultValue=""
-                          placeholder="Please Enter Coast Model"
-                          id="coastModel"
-                          coastModel="coastModel"
-                          value={values.coastModel}
-                          error={touched?.coastModel && errors?.coastModel}
-                          helperText={touched?.coastModel && errors?.coastModel}
+                          name="coastModel"
+                          select
                           onChange={handleChange}
-                          InputProps={{
-                            disableUnderline: true,
+                          error={
+                            touched?.coastModel && errors?.coastModel
+                          }
+                          helperText={
+                            touched?.coastModel && errors?.coastModel
+                          }
+                          value={values.coastModel}
+                          fullWidth
+                          SelectProps={{
+                            displayEmpty: true,
                           }}
-                        />
+                          sx={{
+                            marginTop: 2,
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                            "& input": {
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? theme.palette.common.black
+                                  : theme.palette.secondary.light,
+                              border: "none",
+                            },
+                          }}
+                          InputProps={{
+                            endAdornment: <KeyboardArrowDown />,
+                          }}
+                        >
+                          <MenuItem value={""} disabled>
+                            Please select a Coast Model
+                          </MenuItem>
+                          <MenuItem value={"CPA"}>CPA</MenuItem>
+                          <MenuItem value={"Revshare"}>Revshare</MenuItem>
+                          <MenuItem value={"CPC"}>CPC</MenuItem>
+                        </CustomStrapAutoComplete>
                       </FormControl>
                       <FormControl variant="standard">
                         <InputLabel

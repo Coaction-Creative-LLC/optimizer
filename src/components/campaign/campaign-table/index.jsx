@@ -139,7 +139,7 @@ const CampaignTable = () => {
                   {row.uniqueVersion || 0}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.conversion || 0}
+                  {row.conversionTracking || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {row.uniqueClicks || 0}
@@ -151,7 +151,7 @@ const CampaignTable = () => {
                   {row.prelanderCTR || "0%"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.Clicks || 0}
+                  {row.clicks || 0}
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   <Stack direction={"row"} gap={1}>
@@ -201,7 +201,7 @@ const CampaignTable = () => {
               </Typography>
             </Grid>
             <Grid item sm={6}>
-              <Typography>{campData?.url}</Typography>
+              <Typography>{campData?.offerUrl}</Typography>
             </Grid>
           </Grid>
           <Grid container display={"flex"} justifyContent={"space-between"}>
@@ -211,7 +211,7 @@ const CampaignTable = () => {
               </Typography>
             </Grid>
             <Grid item sm={6}>
-              <Typography>{campData?.generatedURL}</Typography>
+              <Typography>{campData?.url}</Typography>
             </Grid>
           </Grid>
         </DialogContent>

@@ -49,6 +49,7 @@ const OffersTable = () => {
     });
   };
   const { data: { data: offers = [] } = {}, isLoading, error } = useGetOffers();
+  debugger;
   if (isLoading) {
     return <Loader />;
   }
@@ -104,31 +105,31 @@ const OffersTable = () => {
                       "aria-labelledby": row.name,
                     }}
                   />
-                  {row.name}
+                  {row?.name}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.trackingDomain || "N/A"}
+                  {row?.trackingDomain || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.uniqueVersion || "N/A"}
+                  {row?.uniqueVersion || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.conversionTracking === "" ? "N/A" : row.conversionTracking}
+                  {row?.conversionTracking === null ? "N/A" : row?.conversionTracking?.trackingName}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.uniqueClicks || "N/A"}
+                  {row?.uniqueClicks || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.prelanderClicks || "N/A"}
+                  {row?.prelanderClicks || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.prelanderCTR || "N/A"}
+                  {row?.prelanderCTR || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.Clicks || "N/A"}
+                  {row?.Clicks || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  {row.CTR || "N/A"}
+                  {row?.CTR || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   <Edit

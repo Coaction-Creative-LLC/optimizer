@@ -10,6 +10,7 @@ import {
   IconSpeakerphone,
   IconSettings,
   IconArrowsTransferDown,
+  IconUser
 } from "@tabler/icons";
 
 const icons = {
@@ -46,13 +47,14 @@ const dashboard = {
           type: "item",
           url: "/advertiser/add-advertiser",
         },
-        {
-          id: "Audiences",
-          title: <FormattedMessage id="audiences" />,
-          type: "item",
-          url: "/advertiser/audience",
-        },
       ],
+    },
+    {
+      id: "Audience",
+      title: <FormattedMessage id="Audience" />,
+      type: "item",
+      icon: IconUser,
+      url: "/advertiser/audience",
     },
     {
       id: "Offers",
