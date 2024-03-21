@@ -26,7 +26,6 @@ import { openSnackbar } from "store/slices/snackbar";
 import Loader from "ui-component/Loader";
 import useGetOffers from "hooks/useGetOffers";
 import { useLocation } from "react-router-dom";
-import useGetOfferDetails from "hooks/useGetOfferDetails";
 import useGetTrafficSource from "hooks/useGetTrafficSources";
 
 const MainHeading = styled("div")(({ theme }) => ({
@@ -120,7 +119,6 @@ const validationSchema = yup.object({
   trafficSource: yup.string().required("Traffic Source is Required"),
   country: yup.string().required("Country is Required"),
   coastModel: yup.string().required("Coast Model is Required "),
-  // url: yup.string().required("Final URL is Required"),
 });
 
 const AddCampaign = () => {
@@ -148,17 +146,14 @@ const AddCampaign = () => {
     trafficSource: state?.campaign?.trafficSource?._id || "",
     country: state?.campaign?.country || "",
     coastModel: state?.campaign?.coastModel || "",
-    // url: state?.campaign?.url || "",
   };
 
   const [loader, setLoader] = useState(false);
-  const [offerId, setOfferId] = useState("");
   const [formValues, setFormValues] = useState(initialValues);
   const [opendialog, setOpenDialog] = useState(false);
   const [campData, setsetCampData] = useState(null);
-  const [url, setUrl] = useState("");
 
-  const offerDetails = useGetOfferDetails(offerId);
+
   
   const setFormInitialValues = () => {
     setFormValues((prev) => ({
@@ -173,14 +168,6 @@ const AddCampaign = () => {
     }));
   };
 
-  const valuesUrl = (values) => {
-    const { data: { genratedUrl = "" } = {} } = offerDetails;
-    if (genratedUrl) {
-      setUrl(genratedUrl);
-      values.url = url;
-    }
-    return values.url;
-  };
 
   const submitHandler = async (values, { resetForm }) => {
     setLoader(true);
@@ -202,10 +189,6 @@ const AddCampaign = () => {
         resetForm();
         setsetCampData(result.data);
         setOpenDialog(true)
-        debugger;
-        setOfferId("");
-        offerDetails.data = {};
-        setUrl("");
       }
     } catch (error) {
       dispatch(
@@ -286,10 +269,7 @@ const AddCampaign = () => {
                           variant="standard"
                           name="offer"
                           select
-                          onChange={(event) => {
-                            handleChange(event);
-                            setOfferId(event.target.value);
-                          }}
+                          onChange={handleChange}
                           error={touched?.offer && Boolean(errors?.offer)}
                           helperText={touched?.offer && errors?.offer}
                           value={values.offer}
