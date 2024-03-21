@@ -183,34 +183,44 @@ const CampaignTable = () => {
       </TableContainer>
       <Dialog open={opendialog} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle textAlign={"center"}>Campaign Details</DialogTitle>
-        <DialogContent>
-          <Grid container display={"flex"} justifyContent={"space-between"}>
-            <Grid item sm={6} xs={12} md={6}>
+        <DialogContent sx={{padding:5}} >
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
               <Typography textAlign={"left"} fontWeight={700}>
                 Campaign Name:
               </Typography>
             </Grid>
-            <Grid item sm={6}>
+            <Grid item sm={8} xs={12} md={8}>
               <Typography>{campData?.name}</Typography>
             </Grid>
           </Grid>
-          <Grid container display={"flex"} justifyContent={"space-between"}>
-            <Grid item sm={6} xs={12} md={6}>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+                Campaign ID:
+              </Typography>
+            </Grid>
+            <Grid item sm={8} xs={12} md={8}>
+              <Typography>{campData?._id}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
               <Typography textAlign={"left"} fontWeight={700}>
               Original URL:
               </Typography>
             </Grid>
-            <Grid item sm={6}>
+            <Grid item sm={4} xs={12} md={8}>
               <Typography>{campData?.offerUrl}</Typography>
             </Grid>
           </Grid>
-          <Grid container display={"flex"} justifyContent={"space-between"}>
-            <Grid item sm={6} xs={12} md={6}>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
               <Typography textAlign={"left"} fontWeight={700}>
-              Generated URL:
+              Tracking URL:
               </Typography>
             </Grid>
-            <Grid item sm={6}>
+            <Grid item sm={4} xs={12} md={8}>
               <Typography>{campData?.url}</Typography>
             </Grid>
           </Grid>

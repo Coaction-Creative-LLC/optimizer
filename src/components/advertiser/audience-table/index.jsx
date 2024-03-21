@@ -91,6 +91,7 @@ const AudienceTable = ({
         >
           <TableHead>
             <TableRow>
+            <StyledTableCell>ID</StyledTableCell>
               <StyledTableCell>Audience Name</StyledTableCell>
               <StyledTableCell align="left">Status</StyledTableCell>
               <StyledTableCell align="left">Date</StyledTableCell>
@@ -116,7 +117,10 @@ const AudienceTable = ({
                     checked={selectedRows.includes(row?._id)}
                     onChange={() => handleCheckboxChange(row?._id)}
                   />
-                  {row?.groupName}
+                  {row?._id}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.groupName || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {row.status || "N/A"}

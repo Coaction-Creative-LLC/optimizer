@@ -82,6 +82,7 @@ const TrafficSourceTable = () => {
         >
           <TableHead>
             <TableRow>
+            <StyledTableCell>ID</StyledTableCell>
               <StyledTableCell>Name</StyledTableCell>
               <StyledTableCell align="left">Description</StyledTableCell>
               <StyledTableCell align="left">Created At</StyledTableCell>
@@ -103,7 +104,10 @@ const TrafficSourceTable = () => {
                       "aria-labelledby": row.name,
                     }}
                   />
-                  {row.name}
+                  {row._id}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.name || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {row.description || "N/A"}

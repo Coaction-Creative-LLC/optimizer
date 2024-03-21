@@ -80,6 +80,7 @@ const AdvertiserTable = () => {
         >
           <TableHead>
             <TableRow>
+            <StyledTableCell>ID</StyledTableCell>
               <StyledTableCell>Name</StyledTableCell>
               <StyledTableCell align="left">Account Manager</StyledTableCell>
               <StyledTableCell align="left">Login</StyledTableCell>
@@ -105,7 +106,10 @@ const AdvertiserTable = () => {
                       "aria-labelledby": row.name,
                     }}
                   />
-                  {row.name}
+                  {row._id}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row.name || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {row.accountManager || "N/A"}

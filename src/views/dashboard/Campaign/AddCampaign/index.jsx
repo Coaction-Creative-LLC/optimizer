@@ -7,6 +7,10 @@ import {
   ButtonBase,
   TextField,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Typography,
 } from "@mui/material";
 import InnerHeader from "ui-component/InnerHeader";
 import { styled } from "@mui/material/styles";
@@ -116,17 +120,16 @@ const validationSchema = yup.object({
   trafficSource: yup.string().required("Traffic Source is Required"),
   country: yup.string().required("Country is Required"),
   coastModel: yup.string().required("Coast Model is Required "),
-  url: yup.string().required("Final URL is Required"),
+  // url: yup.string().required("Final URL is Required"),
 });
 
 const AddCampaign = () => {
   const theme = useTheme();
   const { state } = useLocation();
   const dispatch = useDispatch();
-  const { data: { data: offers = [] } = {} } = useGetOffers();
+  const { data: { dataArr: offers = [] } = {} } = useGetOffers();
   const { data: { data: trafficSource = [] } = {},} =useGetTrafficSource();
   const { createCampaign } = useCreateCampaign();
-
   const text = [
     {
       value: "Offers",
@@ -145,12 +148,14 @@ const AddCampaign = () => {
     trafficSource: state?.campaign?.trafficSource?._id || "",
     country: state?.campaign?.country || "",
     coastModel: state?.campaign?.coastModel || "",
-    url: state?.campaign?.url || "",
+    // url: state?.campaign?.url || "",
   };
 
   const [loader, setLoader] = useState(false);
   const [offerId, setOfferId] = useState("");
   const [formValues, setFormValues] = useState(initialValues);
+  const [opendialog, setOpenDialog] = useState(false);
+  const [campData, setsetCampData] = useState(null);
   const [url, setUrl] = useState("");
 
   const offerDetails = useGetOfferDetails(offerId);
@@ -195,6 +200,9 @@ const AddCampaign = () => {
         );
         setLoader(false);
         resetForm();
+        setsetCampData(result.data);
+        setOpenDialog(true)
+        debugger;
         setOfferId("");
         offerDetails.data = {};
         setUrl("");
@@ -220,7 +228,10 @@ const AddCampaign = () => {
       setFormInitialValues();
     }
   }, [state]);
-
+  const handleClose = () => {
+    setOpenDialog(false);
+    setsetCampData(null)
+  };
   return (
     <Box sx={{ height: "100%" }}>
       {loader && <Loader />}
@@ -484,7 +495,7 @@ const AddCampaign = () => {
                           <MenuItem value={"CPC"}>CPC</MenuItem>
                         </CustomStrapAutoComplete>
                       </FormControl>
-                      <FormControl variant="standard">
+                      {/* <FormControl variant="standard">
                         <InputLabel
                           shrink
                           htmlFor="Optiimizer URL"
@@ -503,7 +514,7 @@ const AddCampaign = () => {
                             disableUnderline: true,
                           }}
                         />
-                      </FormControl>
+                      </FormControl> */}
                     </Box>
                   </Grid>
                 </Grid>
@@ -513,6 +524,51 @@ const AddCampaign = () => {
           );
         }}
       </Formik>
+      <Dialog open={opendialog} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle textAlign={"center"}>Campaign Details</DialogTitle>
+        <DialogContent sx={{padding:5}} >
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+                Campaign Name:
+              </Typography>
+            </Grid>
+            <Grid item sm={8} xs={12} md={8}>
+              <Typography>{campData?.name}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+                Campaign ID:
+              </Typography>
+            </Grid>
+            <Grid item sm={8} xs={12} md={8}>
+              <Typography>{campData?._id}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+              Original URL:
+              </Typography>
+            </Grid>
+            <Grid item sm={4} xs={12} md={8}>
+              <Typography>{campData?.url}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+              Tracking URL:
+              </Typography>
+            </Grid>
+            <Grid item sm={4} xs={12} md={8}>
+              <Typography>{campData?.generatedURL}</Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

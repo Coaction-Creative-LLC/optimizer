@@ -5,14 +5,16 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Checkbox } from "@mui/material";
+import { Checkbox, Dialog, DialogContent, DialogTitle, Grid, Typography } from "@mui/material";
 import Loader from "ui-component/Loader";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "store/slices/snackbar";
 import useGetOffers from "hooks/useGetOffers";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@emotion/react";
-import { Edit } from "@mui/icons-material";
+import { Edit, InfoOutlined } from "@mui/icons-material";
+import { Stack } from "@mui/system";
+import { useState } from "react";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -41,6 +43,8 @@ const OffersTable = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
+  const [opendialog, setOpenDialog] = useState(false);
+  const [offerData, setOfferData] = useState(null);
   const editHandler = (row) => {
     navigate("/offers/add-offer", {
       state: {
@@ -48,7 +52,7 @@ const OffersTable = () => {
       },
     });
   };
-  const { data: { data: offers = [] } = {}, isLoading, error } = useGetOffers();
+  const { data: { dataArr: offers = [] } = {}, isLoading, error } = useGetOffers();
   debugger;
   if (isLoading) {
     return <Loader />;
@@ -67,6 +71,14 @@ const OffersTable = () => {
       })
     );
   }
+  const handleOpen = (data) => {
+    setOpenDialog(true);
+    setOfferData(data)
+  };
+  const handleClose = () => {
+    setOpenDialog(false);
+    setOfferData(null)
+  };
   return (
     <div style={{ height: 400, width: "100%" }}>
       <TableContainer>
@@ -78,6 +90,7 @@ const OffersTable = () => {
         >
           <TableHead>
             <TableRow>
+            <StyledTableCell>ID</StyledTableCell>
               <StyledTableCell>Name</StyledTableCell>
               <StyledTableCell align="left">Tracking Domain</StyledTableCell>
               <StyledTableCell align="left">Unique Version</StyledTableCell>
@@ -105,7 +118,10 @@ const OffersTable = () => {
                       "aria-labelledby": row.name,
                     }}
                   />
-                  {row?.name}
+                  {row?._id}
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  {row?.name || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   {row?.trackingDomain || "N/A"}
@@ -132,6 +148,7 @@ const OffersTable = () => {
                   {row?.CTR || "N/A"}
                 </StyledTableCell>
                 <StyledTableCell align="center">
+                <Stack direction={"row"} gap={1}>
                   <Edit
                     onClick={() => {
                       editHandler(row);
@@ -141,12 +158,68 @@ const OffersTable = () => {
                       cursor: "pointer",
                     }}
                   />{" "}
+                  <InfoOutlined
+                      onClick={() => {
+                        // editHandler(row);
+                        handleOpen(row);
+                      }}
+                      style={{
+                        color: theme.palette.secondary.dark,
+                        cursor: "pointer",
+                      }}
+                    />{" "}
+                  </Stack>
                 </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog open={opendialog} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle textAlign={"center"}>Offer Details</DialogTitle>
+        <DialogContent sx={{padding:5}} >
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+                Offer Name:
+              </Typography>
+            </Grid>
+            <Grid item sm={8} xs={12} md={8}>
+              <Typography>{offerData?.name}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+                Offer ID:
+              </Typography>
+            </Grid>
+            <Grid item sm={8} xs={12} md={8}>
+              <Typography>{offerData?._id}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+              Offer URL:
+              </Typography>
+            </Grid>
+            <Grid item sm={4} xs={12} md={8}>
+              <Typography>{offerData?.offerUrl}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+              Pixel:
+              </Typography>
+            </Grid>
+            <Grid item sm={4} xs={12} md={8}>
+              <Typography>{offerData?.scriptUrl}</Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -7,6 +7,10 @@ import {
   ButtonBase,
   TextField,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Typography,
 } from "@mui/material";
 import InnerHeader from "ui-component/InnerHeader";
 import { styled } from "@mui/material/styles";
@@ -26,13 +30,10 @@ import useGetConversions from "hooks/useGetAllConversion";
 
 const validationSchema = yup.object({
   name: yup.string().required("name is required"),
-  advertiser: yup.string().required("Advertisor is required"),
+  advertiserId: yup.string().required("Advertisor is required"),
   offerUrl: yup.string().required("URL is Required"),
-  audience: yup.string().required("Audience is Required"),
+  audienceId: yup.string().required("Audience is Required"),
   conversionTracking: yup.string(),
-  iframeScript: yup.string(),
-  javascriptCode: yup.string(),
-  postbackUrl: yup.string(),
 });
 const MainHeading = styled("div")(({ theme }) => ({
   ...theme.typography.button,
@@ -132,7 +133,6 @@ const AddOffer = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {data: {conTrackingList = []} ={}} = useGetConversions();
-  debugger;
   const { data = {} } = useGetAdvertisers();
   const { advertisers = [] } = data;
   const { data: { data: audience = [] } = {} } = useGetAudience();
@@ -140,14 +140,15 @@ const AddOffer = () => {
   const initialValues = {
     _id: state?.offer?._id || "",
     name: state?.offer?.name || "",
-    advertiser: state?.offer?.advertiser?._id || "",
+    advertiserId: state?.offer?.advertiser?._id || "",
     offerUrl: state?.offer?.offerUrl || "",
-    audience: state?.offer?.audience?._id || "",
+    audienceId: state?.offer?.audience?._id || "",
     conversionTracking: state?.offer?.conversionTracking || "",
   };
   const [loader, setLoader] = useState(false);
   const [formValues, setFormValues] = useState(initialValues);
-
+  const [opendialog, setOpenDialog] = useState(false);
+  const [offerData, setOfferData] = useState(null);
   const text = [
     {
       value: "Offers",
@@ -169,9 +170,9 @@ const AddOffer = () => {
       ...prev,
       _id: state?.offer?._id || "",
       name: state?.offer?.name || "",
-      advertiser: state?.offer?.advertiser || "",
+      advertiserId: state?.offer?.advertiser || "",
       offerUrl: state?.offer?.offerUrl || "",
-      audience: state?.offer?.audience || "",
+      audienceId: state?.offer?.audience || "",
       conversionTracking: state?.offer?.conversionTracking || "",
     }));
   };
@@ -193,7 +194,9 @@ const AddOffer = () => {
         );
         setLoader(false);
         resetForm();
-        navigate(-1)
+        setOfferData(result.data);
+        setOpenDialog(true);
+        // navigate(-1)
       }
     } catch (error) {
       dispatch(
@@ -210,7 +213,10 @@ const AddOffer = () => {
       setLoader(false);
     }
   };
-
+  const handleClose = () => {
+    setOpenDialog(false);
+    setOfferData(null)
+  };
   return (
     <Box sx={{ height: "100%" }}>
       {loader && <Loader />}
@@ -276,14 +282,14 @@ const AddOffer = () => {
                         <CustomStrapAutoComplete
                           type={"text"}
                           variant="standard"
-                          name="advertiser"
+                          name="advertiserId"
                           select
                           onChange={handleChange}
                           error={
-                            touched?.advertiser && Boolean(errors?.advertiser)
+                            touched?.advertiserId && Boolean(errors?.advertiserId)
                           }
-                          helperText={touched?.advertiser && errors?.advertiser}
-                          value={values.advertiser}
+                          helperText={touched?.advertiserId && errors?.advertiserId}
+                          value={values.advertiserId}
                           fullWidth
                           SelectProps={{
                             displayEmpty: true,
@@ -355,12 +361,12 @@ const AddOffer = () => {
                         <CustomStrapAutoComplete
                           type={"text"}
                           variant="standard"
-                          name="audience"
+                          name="audienceId"
                           select
                           onChange={handleChange}
-                          error={touched?.audience && Boolean(errors?.audience)}
-                          helperText={touched?.audience && errors?.audience}
-                          value={values.audience}
+                          error={touched?.audienceId && Boolean(errors?.audienceId)}
+                          helperText={touched?.audienceId && errors?.audienceId}
+                          value={values.audienceId}
                           fullWidth
                           SelectProps={{
                             displayEmpty: true,
@@ -468,9 +474,55 @@ const AddOffer = () => {
               </Container>
               <CustomStrapButton type="submit">Add Offer</CustomStrapButton>
             </Form>
+            
           );
         }}
       </Formik>
+      <Dialog open={opendialog} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle textAlign={"center"}>Offer Details</DialogTitle>
+        <DialogContent sx={{padding:5}} >
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+                Offer Name:
+              </Typography>
+            </Grid>
+            <Grid item sm={8} xs={12} md={8}>
+              <Typography>{offerData?.name}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+                Offer ID:
+              </Typography>
+            </Grid>
+            <Grid item sm={8} xs={12} md={8}>
+              <Typography>{offerData?._id}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+              Offer URL:
+              </Typography>
+            </Grid>
+            <Grid item sm={4} xs={12} md={8}>
+              <Typography>{offerData?.offerUrl}</Typography>
+            </Grid>
+          </Grid>
+          <Grid my={1} container display={"flex"} justifyContent={"space-between"}>
+            <Grid item sm={4} xs={12} md={4}>
+              <Typography textAlign={"left"} fontWeight={700}>
+              Pixel:
+              </Typography>
+            </Grid>
+            <Grid item sm={4} xs={12} md={8}>
+              <Typography>{offerData?.scriptUrl}</Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
